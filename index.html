@@ -169,7 +169,6 @@ async function sendConfirmationEmail(entry) {
       to_email: entry.email,
       name: entry.name,
       rsvp_summary: buildRsvpSummary(entry),
-      address: "21 Ridge Road, Whitehouse Station, NJ 08889 (Black House w/White & Brown Accents)",
     });
   } catch (e) { console.error("Email send failed:", e); }
 }
