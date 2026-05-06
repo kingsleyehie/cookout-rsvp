@@ -257,7 +257,7 @@ function renderTicker() {
   const t = getTotals();
   if (t.families === 0) return '';
   return `<div class="ticker">
-    <span class="total" data-nav="guests" style="cursor:pointer;text-decoration:underline;text-underline-offset:3px">${t.total} attending</span>
+    <span class="total" data-nav="guests" style="cursor:pointer">${t.total} attending</span>
     <span class="sep">|</span>
     <span>${t.adults} adults</span><span class="sep">·</span>
     <span>${t.teens} teens</span><span class="sep">·</span>
@@ -333,7 +333,7 @@ function renderHome() {
       <h1>Memorial Day Cookout</h1>
       <p class="subtitle">Saturday, May 23rd · 3–7 PM</p>
       <p class="address">21 Ridge Road, Whitehouse Station, NJ 08889</p>
-      <p class="detail">(Blackhouse w/white/brown accents)</p>
+      <p class="detail">(Black House w/White & Brown Accents)</p>
     </div>
     ${renderTicker()}
     <div class="body">
@@ -527,7 +527,7 @@ function renderRsvpForm() {
         <div class="chip-row">${extraChips}</div>
       </div>
 
-      <button class="btn-primary" id="submitBtn" ${!form.name.trim() ? 'disabled' : ''}>${editingId ? 'Update RSVP' : 'Submit RSVP'}</button>
+      <button class="btn-primary" id="submitBtn" ${!form.name.trim() || !form.email.trim() ? 'disabled' : ''}>${editingId ? 'Update RSVP' : 'Submit RSVP'}</button>
 
       <div style="margin-top:24px">
         <div class="heading" style="font-size:14px;color:#8B7355">📋 Current Food Board</div>
@@ -586,14 +586,19 @@ function bindEvents() {
   // Name input
   const nameInput = document.getElementById("rsvpName");
   if (nameInput) {
-    nameInput.addEventListener("input", () => { form.name = nameInput.value; });
+    nameInput.addEventListener("input", () => { form.name = nameInput.value; updateSubmitBtn(); });
     nameInput.addEventListener("change", () => { form.name = nameInput.value; });
   }
 
   const emailInput = document.getElementById("rsvpEmail");
   if (emailInput) {
-    emailInput.addEventListener("input", () => { form.email = emailInput.value; });
+    emailInput.addEventListener("input", () => { form.email = emailInput.value; updateSubmitBtn(); });
     emailInput.addEventListener("change", () => { form.email = emailInput.value; });
+  }
+
+  function updateSubmitBtn() {
+    const btn = document.getElementById("submitBtn");
+    if (btn) btn.disabled = !form.name.trim() || !form.email.trim();
   }
 
   // Category buttons
@@ -634,7 +639,7 @@ function bindEvents() {
   const submitBtn = document.getElementById("submitBtn");
   if (submitBtn) {
     submitBtn.addEventListener("click", async () => {
-      if (!form.name.trim()) return;
+      if (!form.name.trim() || !form.email.trim()) return;
       const entry = {
         name: form.name.trim(),
         email: form.email.trim(),
