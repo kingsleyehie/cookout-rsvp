@@ -6,6 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Memorial Day Cookout</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body { font-family: 'DM Sans', sans-serif; background: #FAF5ED; color: #2D2418; min-height: 100vh; }
@@ -144,6 +145,33 @@ body { font-family: 'DM Sans', sans-serif; background: #FAF5ED; color: #2D2418; 
 const DB_URL = "https://cookout-rsvp-default-rtdb.firebaseio.com";
 const ADMIN_PIN = "0523";
 
+// EmailJS config
+const EMAILJS_PUBLIC_KEY = "lTqtiCTbkRv43PzBQ";
+const EMAILJS_SERVICE_ID = "service_9q42hxc";
+const EMAILJS_TEMPLATE_ID = "template_rplm4eh";
+emailjs.init(EMAILJS_PUBLIC_KEY);
+
+function buildRsvpSummary(entry) {
+  let parts = [];
+  parts.push(`${entry.adults} adult${entry.adults !== 1 ? 's' : ''}`);
+  if (entry.teens > 0) parts.push(`${entry.teens} teen${entry.teens !== 1 ? 's' : ''}`);
+  if (entry.kids > 0) parts.push(`${entry.kids} kid${entry.kids !== 1 ? 's' : ''}`);
+  let summary = parts.join(', ');
+  if (entry.foodItem) summary += ` · Bringing: ${entry.foodItem}`;
+  return summary;
+}
+
+async function sendConfirmationEmail(entry) {
+  if (!entry.email) return;
+  try {
+    await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+      to_email: entry.email,
+      name: entry.name,
+      rsvp_summary: buildRsvpSummary(entry),
+    });
+  } catch (e) { console.error("Email send failed:", e); }
+}
+
 const FOOD_CATEGORIES = [
   { id: "rice", label: "Rice Dishes", emoji: "🍚", examples: "Jollof, fried rice, native rice, etc." },
   { id: "protein", label: "Proteins & Meats", emoji: "🍖", examples: "Suya, goat, chicken, fish, turkey, etc." },
@@ -166,7 +194,7 @@ let rsvps = {};
 let currentView = "home";
 let adminUnlocked = false;
 let editingId = null;
-let form = { name: "", adults: 1, teens: 0, kids: 0, bringingFood: false, foodCategory: "", foodItem: "", servingSize: "", extras: [] };
+let form = { name: "", email: "", adults: 1, teens: 0, kids: 0, bringingFood: false, foodCategory: "", foodItem: "", servingSize: "", extras: [] };
 let submitted = false;
 let pollInterval = null;
 
@@ -229,7 +257,7 @@ function renderTicker() {
   const t = getTotals();
   if (t.families === 0) return '';
   return `<div class="ticker">
-    <span class="total">${t.total} attending</span>
+    <span class="total" data-nav="guests" style="cursor:pointer;text-decoration:underline;text-underline-offset:3px">${t.total} attending</span>
     <span class="sep">|</span>
     <span>${t.adults} adults</span><span class="sep">·</span>
     <span>${t.teens} teens</span><span class="sep">·</span>
@@ -304,8 +332,8 @@ function renderHome() {
       <div style="font-size:42px;margin-bottom:6px;position:relative">🔥</div>
       <h1>Memorial Day Cookout</h1>
       <p class="subtitle">Saturday, May 23rd · 3–7 PM</p>
-      <p class="address">21 Ridge Road, Whitehouse Station, NJ 08889 (Blackhouse w/white/brown accents)</p>
-      <p class="detail">Bring a friend</p>
+      <p class="address">21 Ridge Road, Whitehouse Station, NJ 08889</p>
+      <p class="detail">(Blackhouse w/white/brown accents)</p>
     </div>
     ${renderTicker()}
     <div class="body">
@@ -458,6 +486,9 @@ function renderRsvpForm() {
         <label class="label">Your Name / Family Name</label>
         <input class="input" id="rsvpName" placeholder="e.g. The Okafor Family" value="${esc(form.name)}">
 
+        <label class="label">Email</label>
+        <input class="input" id="rsvpEmail" type="email" placeholder="e.g. name@email.com" value="${esc(form.email)}">
+
         <label class="label">Adults</label>
         <div class="num-row">
           <button class="num-btn" data-num="adults" data-dir="-1">−</button>
@@ -559,6 +590,12 @@ function bindEvents() {
     nameInput.addEventListener("change", () => { form.name = nameInput.value; });
   }
 
+  const emailInput = document.getElementById("rsvpEmail");
+  if (emailInput) {
+    emailInput.addEventListener("input", () => { form.email = emailInput.value; });
+    emailInput.addEventListener("change", () => { form.email = emailInput.value; });
+  }
+
   // Category buttons
   document.querySelectorAll("[data-cat]").forEach(btn => {
     btn.addEventListener("click", () => {
@@ -600,6 +637,7 @@ function bindEvents() {
       if (!form.name.trim()) return;
       const entry = {
         name: form.name.trim(),
+        email: form.email.trim(),
         adults: Math.max(1, form.adults),
         teens: Math.max(0, form.teens),
         kids: Math.max(0, form.kids),
@@ -611,7 +649,9 @@ function bindEvents() {
       };
       submitBtn.disabled = true;
       submitBtn.textContent = "Submitting...";
+      const isNew = !editingId;
       await saveRsvp(editingId, entry);
+      if (isNew) sendConfirmationEmail(entry);
       submitted = true;
       editingId = null;
       resetForm();
@@ -646,7 +686,7 @@ function bindEvents() {
       if (!r) return;
       editingId = id;
       form = {
-        name: r.name, adults: r.adults, teens: r.teens || 0, kids: r.kids,
+        name: r.name, email: r.email || "", adults: r.adults, teens: r.teens || 0, kids: r.kids,
         bringingFood: !!r.foodCategory, foodCategory: r.foodCategory || "",
         foodItem: r.foodItem || "", servingSize: r.servingSize || "",
         extras: r.extras || [],
@@ -710,7 +750,7 @@ function showPinModal() {
 }
 
 function resetForm() {
-  form = { name: "", adults: 1, teens: 0, kids: 0, bringingFood: false, foodCategory: "", foodItem: "", servingSize: "", extras: [] };
+  form = { name: "", email: "", adults: 1, teens: 0, kids: 0, bringingFood: false, foodCategory: "", foodItem: "", servingSize: "", extras: [] };
 }
 
 function esc(str) {
