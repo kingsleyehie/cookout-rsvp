@@ -304,15 +304,16 @@ function renderHome() {
       <div style="font-size:42px;margin-bottom:6px;position:relative">🔥</div>
       <h1>Memorial Day Cookout</h1>
       <p class="subtitle">Saturday, May 23rd · 3–7 PM</p>
-      <p class="detail">Come as you are · Bring a friend</p>
-      <p class="address">21 Ridge Road, Whitehouse Station, NJ 08889</p>
+      <p class="address">21 Ridge Road, Whitehouse Station, NJ 08889 (Blackhouse w/white/brown accents)</p>
+      <p class="detail">Bring a friend</p>
     </div>
     ${renderTicker()}
     <div class="body">
       <div class="card">
-        <p class="desc-line">An afternoon of fellowship, food, and fun this Memorial Day weekend.</p>
-        <p class="desc-line">Everyone is welcome — bring your loved ones, bring a friend.</p>
-        <p class="desc-line">We invite you to bring your favorite dish or delicacy to share. Check the food board to see what's covered and where there's room.</p>
+        <p class="desc-line">Join us for an afternoon of fellowship, food, music, and fun this Memorial Day weekend.</p>
+        <p class="desc-line">Come as you are — solo, with friends, with the family!</p>
+        <p class="desc-line">We invite you to bring your favorite dish or delicacy to share.</p>
+        <p class="desc-line">Check the food board to see what's covered and where there's room.</p>
       </div>
       <button class="btn-primary" data-nav="rsvp">RSVP Now</button>
       <div class="spacer"></div>
@@ -428,7 +429,7 @@ function renderRsvpForm() {
     `<button class="chip ${form.extras.includes(ex.id) ? 'active' : ''}" data-extra="${ex.id}">${ex.emoji} ${ex.label}</button>`
   ).join("");
 
-  const foodSection = form.bringingFood ? `
+  const foodSection = `
     <div style="margin-top:16px">
       <label class="label" style="margin-top:0">Pick a category</label>
       <div class="cat-grid">${catButtons}</div>
@@ -442,7 +443,7 @@ function renderRsvpForm() {
         <option value="Medium (10–20)" ${form.servingSize === 'Medium (10–20)' ? 'selected' : ''}>Medium (feeds ~10–20)</option>
         <option value="Large (20+)" ${form.servingSize === 'Large (20+)' ? 'selected' : ''}>Large (feeds ~20+)</option>
       </select>
-    </div>` : '';
+    </div>`;
 
   return `
     <div class="header header-sm">
@@ -482,12 +483,8 @@ function renderRsvpForm() {
       <div class="card">
         <div class="heading">🍽️ Bringing a Dish?</div>
         <p style="font-size:13px;color:#8B7355;margin:0 0 14px;line-height:1.5">
-          Totally optional — bring yourself and your family, that's enough! If you'd like to contribute, we invite you to bring your favorite dish or delicacy. Pick a category below to see what's already covered.
+          We invite you to bring your favorite dish or delicacy. Pick a category below to see what's already covered.
         </p>
-        <div class="pill-row">
-          <button class="pill ${!form.bringingFood ? 'active' : ''}" data-food="no">Just coming!</button>
-          <button class="pill ${form.bringingFood ? 'active' : ''}" data-food="yes">Bringing a dish</button>
-        </div>
         ${foodSection}
       </div>
 
@@ -562,15 +559,6 @@ function bindEvents() {
     nameInput.addEventListener("change", () => { form.name = nameInput.value; });
   }
 
-  // Food toggle
-  document.querySelectorAll("[data-food]").forEach(btn => {
-    btn.addEventListener("click", () => {
-      form.bringingFood = btn.getAttribute("data-food") === "yes";
-      if (!form.bringingFood) { form.foodCategory = ""; form.foodItem = ""; form.servingSize = ""; }
-      render();
-    });
-  });
-
   // Category buttons
   document.querySelectorAll("[data-cat]").forEach(btn => {
     btn.addEventListener("click", () => {
@@ -615,9 +603,9 @@ function bindEvents() {
         adults: Math.max(1, form.adults),
         teens: Math.max(0, form.teens),
         kids: Math.max(0, form.kids),
-        foodCategory: form.bringingFood ? form.foodCategory : "",
-        foodItem: form.bringingFood ? form.foodItem.trim() : "",
-        servingSize: form.bringingFood ? form.servingSize : "",
+        foodCategory: form.foodCategory || "",
+        foodItem: form.foodItem.trim() || "",
+        servingSize: form.servingSize || "",
         extras: form.extras,
         ts: new Date().toISOString(),
       };
