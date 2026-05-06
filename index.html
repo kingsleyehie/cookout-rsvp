@@ -169,6 +169,7 @@ async function sendConfirmationEmail(entry) {
       to_email: entry.email,
       name: entry.name,
       rsvp_summary: buildRsvpSummary(entry),
+      address: "21 Ridge Road, Whitehouse Station, NJ 08889 (Black House w/White & Brown Accents)",
     });
   } catch (e) { console.error("Email send failed:", e); }
 }
@@ -345,8 +346,7 @@ function renderHome() {
       <div style="font-size:42px;margin-bottom:6px;position:relative">🔥</div>
       <h1>Memorial Day Cookout</h1>
       <p class="subtitle">Saturday, May 23rd · 3–7 PM</p>
-      <p class="address"><a href="https://www.google.com/maps/search/?api=1&query=21+Ridge+Road+Whitehouse+Station+NJ+08889" target="_blank" style="color:inherit;text-decoration:none">21 Ridge Road, Whitehouse Station, NJ 08889</a></p>
-      <p class="detail">(Black House w/White & Brown Accents)</p>
+      <p class="address" style="opacity:0.75">Address shared upon RSVP</p>
     </div>
     ${renderTicker()}
     <div class="body">
