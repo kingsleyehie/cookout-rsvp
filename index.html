@@ -194,6 +194,8 @@ let rsvps = {};
 let currentView = "home";
 let adminUnlocked = false;
 let editingId = null;
+let lookupEmail = "";
+let lookupError = "";
 let form = { name: "", email: "", adults: 1, teens: 0, kids: 0, bringingFood: false, foodCategory: "", foodItem: "", servingSize: "", extras: [] };
 let submitted = false;
 let pollInterval = null;
@@ -481,6 +483,16 @@ function renderRsvpForm() {
     ${renderTicker()}
     ${renderNav("rsvp")}
     <div class="body">
+      ${!editingId ? `<div class="card" style="background:#F8F4ED;border:1px solid #E8DFD0">
+        <div style="font-size:14px;font-weight:600;color:#6B5D4D;margin-bottom:8px">Already RSVP'd?</div>
+        <p style="font-size:13px;color:#8B7355;margin:0 0 10px;line-height:1.4">Enter your email to look up and update your RSVP.</p>
+        <div style="display:flex;gap:8px">
+          <input class="input" id="lookupEmail" type="email" placeholder="Your email" value="${esc(lookupEmail)}" style="flex:1">
+          <button class="btn-ghost" id="lookupBtn" style="width:auto;padding:12px 16px;white-space:nowrap">Look Up</button>
+        </div>
+        ${lookupError ? `<p style="font-size:13px;color:#D44;margin:8px 0 0">${lookupError}</p>` : ''}
+      </div>` : ''}
+
       <div class="card">
         <div class="heading">👋 Who's Coming?</div>
         <label class="label">Your Name / Family Name</label>
@@ -565,7 +577,7 @@ function bindEvents() {
   document.querySelectorAll("[data-nav]").forEach(btn => {
     btn.addEventListener("click", () => {
       const target = btn.getAttribute("data-nav");
-      if (target === "rsvp") { submitted = false; resetForm(); editingId = null; }
+      if (target === "rsvp") { submitted = false; resetForm(); editingId = null; lookupEmail = ""; lookupError = ""; }
       currentView = target;
       render();
       window.scrollTo(0, 0);
@@ -594,6 +606,38 @@ function bindEvents() {
   if (emailInput) {
     emailInput.addEventListener("input", () => { form.email = emailInput.value; updateSubmitBtn(); });
     emailInput.addEventListener("change", () => { form.email = emailInput.value; });
+  }
+
+  // Lookup
+  const lookupInput = document.getElementById("lookupEmail");
+  if (lookupInput) {
+    lookupInput.addEventListener("input", () => { lookupEmail = lookupInput.value; });
+    lookupInput.addEventListener("change", () => { lookupEmail = lookupInput.value; });
+  }
+  const lookupBtn = document.getElementById("lookupBtn");
+  if (lookupBtn) {
+    lookupBtn.addEventListener("click", () => {
+      const email = lookupEmail.trim().toLowerCase();
+      if (!email) { lookupError = "Please enter your email."; render(); return; }
+      const match = Object.entries(rsvps).find(([id, r]) => (r.email || "").toLowerCase() === email);
+      if (match) {
+        const [id, r] = match;
+        editingId = id;
+        form = {
+          name: r.name, email: r.email || "", adults: r.adults, teens: r.teens || 0, kids: r.kids,
+          bringingFood: !!r.foodCategory, foodCategory: r.foodCategory || "",
+          foodItem: r.foodItem || "", servingSize: r.servingSize || "",
+          extras: r.extras || [],
+        };
+        lookupError = "";
+        lookupEmail = "";
+        render();
+        window.scrollTo(0, 0);
+      } else {
+        lookupError = "No RSVP found with that email. You can submit a new one below.";
+        render();
+      }
+    });
   }
 
   function updateSubmitBtn() {
@@ -654,9 +698,8 @@ function bindEvents() {
       };
       submitBtn.disabled = true;
       submitBtn.textContent = "Submitting...";
-      const isNew = !editingId;
       await saveRsvp(editingId, entry);
-      if (isNew) sendConfirmationEmail(entry);
+      if (entry.email) sendConfirmationEmail(entry);
       submitted = true;
       editingId = null;
       resetForm();
