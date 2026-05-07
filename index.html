@@ -158,7 +158,11 @@ function buildRsvpSummary(entry) {
   if (entry.teens > 0) parts.push(`${entry.teens} teen${entry.teens !== 1 ? 's' : ''}`);
   if (entry.kids > 0) parts.push(`${entry.kids} kid${entry.kids !== 1 ? 's' : ''}`);
   let summary = parts.join(', ');
-  if (entry.foodItem) summary += ` · Bringing: ${entry.foodItem}`;
+  const dishes = getDishes(entry);
+  if (dishes.length > 0) {
+    const dishNames = dishes.map(d => d.item || FOOD_CATEGORIES.find(c => c.id === d.category)?.label || d.category).join(', ');
+    summary += ` · Bringing: ${dishNames}`;
+  }
   return summary;
 }
 
@@ -207,9 +211,16 @@ let adminUnlocked = false;
 let editingId = null;
 let lookupEmail = "";
 let lookupError = "";
-let form = { name: "", email: "", adults: 1, teens: 0, kids: 0, bringingFood: false, foodCategory: "", foodItem: "", servingSize: "", extras: [] };
+let form = { name: "", email: "", adults: 1, teens: 0, kids: 0, dishes: [], extras: [] };
 let submitted = false;
 let pollInterval = null;
+
+// Normalize old single-category RSVPs and new multi-dish format
+function getDishes(rsvp) {
+  if (rsvp.dishes && rsvp.dishes.length > 0) return rsvp.dishes;
+  if (rsvp.foodCategory) return [{ category: rsvp.foodCategory, item: rsvp.foodItem || "", servingSize: rsvp.servingSize || "" }];
+  return [];
+}
 
 // ─── Firebase REST API ───
 async function loadRsvps() {
@@ -291,14 +302,20 @@ function renderFoodBoard(compact) {
   const list = getRsvpList();
   const cls = compact ? "compact" : "";
   return FOOD_CATEGORIES.map(cat => {
-    const items = list.filter(r => r.foodCategory === cat.id);
-    const badgeCls = items.length > 0 ? "filled" : "open";
-    const badgeText = items.length > 0 ? `${items.length} signed up` : "Open";
+    // Collect all dishes in this category from all RSVPs
+    const catItems = [];
+    list.forEach(r => {
+      getDishes(r).forEach(d => {
+        if (d.category === cat.id) catItems.push({ ...d, name: r.name, rsvpId: r.id });
+      });
+    });
+    const badgeCls = catItems.length > 0 ? "filled" : "open";
+    const badgeText = catItems.length > 0 ? `${catItems.length} signed up` : "Open";
     let itemsHtml = "";
-    if (items.length > 0) {
-      itemsHtml = `<div class="food-items">${items.map(item =>
+    if (catItems.length > 0) {
+      itemsHtml = `<div class="food-items">${catItems.map(item =>
         `<div class="food-item">
-          <span class="food-item-name">${esc(item.foodItem || cat.label)}</span>
+          <span class="food-item-name">${esc(item.item || cat.label)}</span>
           <span class="food-item-who">${esc(item.name)}${item.servingSize ? ' · ' + esc(item.servingSize) : ''}</span>
         </div>`
       ).join("")}</div>`;
@@ -354,6 +371,7 @@ function renderHome() {
         <p class="desc-line"><strong>Come as you are — solo, with friends, with the family!</strong></p>
         <p class="desc-line">We invite you to bring your favorite dish or delicacy to share.</p>
         <p class="desc-line">Check the food board to see what's covered and where there's room.</p>
+        <p class="desc-line" style="font-size:13px;color:#B8420F;font-weight:600">Please RSVP by Sunday, May 17th to help us plan.</p>
       </div>
       <button class="btn-primary" data-nav="rsvp">RSVP Now</button>
       <div class="spacer"></div>
@@ -397,9 +415,12 @@ function renderGuests() {
     </div>`;
     const guestRows = list.map(r => {
       let badges = '';
-      if (r.foodCategory) {
-        const cat = FOOD_CATEGORIES.find(c => c.id === r.foodCategory);
-        badges += `<span class="guest-badge food">${cat ? cat.emoji : ''} ${esc(r.foodItem || (cat ? cat.label : ''))}</span> `;
+      const dishes = getDishes(r);
+      if (dishes.length > 0) {
+        dishes.forEach(d => {
+          const cat = FOOD_CATEGORIES.find(c => c.id === d.category);
+          badges += `<span class="guest-badge food">${cat ? cat.emoji : ''} ${esc(d.item || (cat ? cat.label : ''))}</span> `;
+        });
       }
       if (r.extras && r.extras.length > 0) {
         const labels = r.extras.map(e => { const ex = EXTRAS.find(x => x.id === e); return ex ? ex.label : ''; }).join(", ");
@@ -443,54 +464,56 @@ function renderGuests() {
 
 function renderRsvpForm() {
   const list = getRsvpList().filter(r => r.id !== editingId);
+
+  // Build category buttons (multi-select toggles)
   const catButtons = FOOD_CATEGORIES.map(cat => {
-    const ct = list.filter(r => r.foodCategory === cat.id).length;
-    return `<button class="cat-btn ${form.foodCategory === cat.id ? 'active' : ''}" data-cat="${cat.id}">
+    const isSelected = form.dishes.some(d => d.category === cat.id);
+    // Count existing items in this category from other RSVPs
+    let ct = 0;
+    list.forEach(r => { getDishes(r).forEach(d => { if (d.category === cat.id) ct++; }); });
+    return `<button class="cat-btn ${isSelected ? 'active' : ''}" data-cat-toggle="${cat.id}">
       <div>${cat.emoji} ${cat.label}</div>
       ${ct > 0 ? `<div class="count">${ct} already signed up</div>` : ''}
     </button>`;
   }).join("");
 
-  let existingHtml = '';
-  if (form.foodCategory) {
-    const existing = list.filter(r => r.foodCategory === form.foodCategory);
-    if (existing.length > 0) {
-      existingHtml = `<div class="existing-box">
-        <div class="title">ALREADY SIGNED UP IN THIS CATEGORY</div>
-        ${existing.map(e => {
-          const cat = FOOD_CATEGORIES.find(c => c.id === e.foodCategory);
-          return `<div class="item">${esc(e.foodItem || (cat ? cat.label : ''))} — <span>${esc(e.name)}</span></div>`;
-        }).join("")}
-      </div>`;
-    }
-  }
+  // Build per-category dish fields for selected categories
+  const dishFields = form.dishes.map((dish, idx) => {
+    const cat = FOOD_CATEGORIES.find(c => c.id === dish.category);
+    if (!cat) return '';
+    // Show existing items in this category
+    const existingItems = [];
+    list.forEach(r => { getDishes(r).forEach(d => { if (d.category === cat.id) existingItems.push({ item: d.item, name: r.name }); }); });
+    const existingHtml = existingItems.length > 0 ? `<div class="existing-box" style="margin-bottom:10px">
+      <div class="title">ALREADY IN ${cat.label.toUpperCase()}</div>
+      ${existingItems.map(e => `<div class="item">${esc(e.item || cat.label)} — <span>${esc(e.name)}</span></div>`).join("")}
+    </div>` : '';
+    return `<div style="background:#FDFAF6;border:1px solid #EDE3D3;border-radius:10px;padding:14px;margin-top:10px">
+      <div style="font-size:14px;font-weight:700;color:#B8420F;margin-bottom:8px">${cat.emoji} ${cat.label}</div>
+      ${existingHtml}
+      <label class="label" style="margin-top:0">What are you bringing?</label>
+      <input class="input dish-item" data-dish-idx="${idx}" placeholder="e.g. ${cat.examples.replace(', etc.', '').split(', ').slice(0,2).join(', ')}..." value="${esc(dish.item)}">
+      <label class="label">Approximate Serving Size</label>
+      <select class="select dish-size" data-dish-idx="${idx}">
+        <option value="">Select...</option>
+        <option value="Small (5–10)" ${dish.servingSize === 'Small (5–10)' ? 'selected' : ''}>Small (feeds ~5–10)</option>
+        <option value="Medium (10–20)" ${dish.servingSize === 'Medium (10–20)' ? 'selected' : ''}>Medium (feeds ~10–20)</option>
+        <option value="Large (20+)" ${dish.servingSize === 'Large (20+)' ? 'selected' : ''}>Large (feeds ~20+)</option>
+        <option value="Half Pan" ${dish.servingSize === 'Half Pan' ? 'selected' : ''}>Half Pan</option>
+        <option value="Full Pan" ${dish.servingSize === 'Full Pan' ? 'selected' : ''}>Full Pan</option>
+      </select>
+    </div>`;
+  }).join("");
 
   const extraChips = EXTRAS.map(ex =>
     `<button class="chip ${form.extras.includes(ex.id) ? 'active' : ''}" data-extra="${ex.id}">${ex.emoji} ${ex.label}</button>`
   ).join("");
 
-  const foodSection = `
-    <div style="margin-top:16px">
-      <label class="label" style="margin-top:0">Pick a category</label>
-      <div class="cat-grid">${catButtons}</div>
-      ${existingHtml}
-      <label class="label">What are you planning to bring?</label>
-      <input class="input" id="foodItem" placeholder="e.g. Jollof rice, pepper soup, zobo..." value="${esc(form.foodItem)}">
-      <label class="label">Approximate Serving Size</label>
-      <select class="select" id="servingSize">
-        <option value="">Select...</option>
-        <option value="Small (5–10)" ${form.servingSize === 'Small (5–10)' ? 'selected' : ''}>Small (feeds ~5–10)</option>
-        <option value="Medium (10–20)" ${form.servingSize === 'Medium (10–20)' ? 'selected' : ''}>Medium (feeds ~10–20)</option>
-        <option value="Large (20+)" ${form.servingSize === 'Large (20+)' ? 'selected' : ''}>Large (feeds ~20+)</option>
-        <option value="Half Pan" ${form.servingSize === 'Half Pan' ? 'selected' : ''}>Half Pan</option>
-        <option value="Full Pan" ${form.servingSize === 'Full Pan' ? 'selected' : ''}>Full Pan</option>
-      </select>
-    </div>`;
-
   return `
     <div class="header header-sm">
       <h1 class="sm">${editingId ? 'Update RSVP' : 'RSVP'}</h1>
       <p class="detail">Saturday, May 23rd · 3–7 PM</p>
+      <p class="detail" style="color:#F5D5A0;margin-top:4px">Please RSVP by Sunday, May 17th</p>
     </div>
     ${renderTicker()}
     ${renderNav("rsvp")}
@@ -538,9 +561,10 @@ function renderRsvpForm() {
       <div class="card">
         <div class="heading">🍽️ Bringing a Dish?</div>
         <p style="font-size:13px;color:#8B7355;margin:0 0 14px;line-height:1.5">
-          We invite you to bring your favorite dish or delicacy. Pick a category below to see what's already covered.
+          We invite you to bring your favorite dish or delicacy. Tap one or more categories below to sign up.
         </p>
-        ${foodSection}
+        <div class="cat-grid">${catButtons}</div>
+        ${dishFields}
       </div>
 
       <div class="card">
@@ -637,8 +661,7 @@ function bindEvents() {
         editingId = id;
         form = {
           name: r.name, email: r.email || "", adults: r.adults, teens: r.teens || 0, kids: r.kids,
-          bringingFood: !!r.foodCategory, foodCategory: r.foodCategory || "",
-          foodItem: r.foodItem || "", servingSize: r.servingSize || "",
+          dishes: getDishes(r),
           extras: r.extras || [],
         };
         lookupError = "";
@@ -657,26 +680,32 @@ function bindEvents() {
     if (btn) btn.disabled = !form.name.trim() || !form.email.trim();
   }
 
-  // Category buttons
-  document.querySelectorAll("[data-cat]").forEach(btn => {
+  // Category toggle (multi-select)
+  document.querySelectorAll("[data-cat-toggle]").forEach(btn => {
     btn.addEventListener("click", () => {
-      form.foodCategory = btn.getAttribute("data-cat");
+      const catId = btn.getAttribute("data-cat-toggle");
+      const exists = form.dishes.findIndex(d => d.category === catId);
+      if (exists >= 0) {
+        form.dishes = form.dishes.filter(d => d.category !== catId);
+      } else {
+        form.dishes = [...form.dishes, { category: catId, item: "", servingSize: "" }];
+      }
       render();
     });
   });
 
-  // Food item input
-  const foodInput = document.getElementById("foodItem");
-  if (foodInput) {
-    foodInput.addEventListener("input", () => { form.foodItem = foodInput.value; });
-    foodInput.addEventListener("change", () => { form.foodItem = foodInput.value; });
-  }
+  // Per-dish item inputs
+  document.querySelectorAll(".dish-item").forEach(input => {
+    const idx = parseInt(input.getAttribute("data-dish-idx"));
+    input.addEventListener("input", () => { if (form.dishes[idx]) form.dishes[idx].item = input.value; });
+    input.addEventListener("change", () => { if (form.dishes[idx]) form.dishes[idx].item = input.value; });
+  });
 
-  // Serving size
-  const servingSelect = document.getElementById("servingSize");
-  if (servingSelect) {
-    servingSelect.addEventListener("change", () => { form.servingSize = servingSelect.value; });
-  }
+  // Per-dish serving size
+  document.querySelectorAll(".dish-size").forEach(select => {
+    const idx = parseInt(select.getAttribute("data-dish-idx"));
+    select.addEventListener("change", () => { if (form.dishes[idx]) form.dishes[idx].servingSize = select.value; });
+  });
 
   // Extra chips
   document.querySelectorAll("[data-extra]").forEach(btn => {
@@ -702,9 +731,7 @@ function bindEvents() {
         adults: Math.max(1, form.adults),
         teens: Math.max(0, form.teens),
         kids: Math.max(0, form.kids),
-        foodCategory: form.foodCategory || "",
-        foodItem: form.foodItem.trim() || "",
-        servingSize: form.servingSize || "",
+        dishes: form.dishes.filter(d => d.item.trim() || d.category),
         extras: form.extras,
         ts: new Date().toISOString(),
       };
@@ -748,8 +775,7 @@ function bindEvents() {
       editingId = id;
       form = {
         name: r.name, email: r.email || "", adults: r.adults, teens: r.teens || 0, kids: r.kids,
-        bringingFood: !!r.foodCategory, foodCategory: r.foodCategory || "",
-        foodItem: r.foodItem || "", servingSize: r.servingSize || "",
+        dishes: getDishes(r),
         extras: r.extras || [],
       };
       submitted = false;
@@ -811,7 +837,7 @@ function showPinModal() {
 }
 
 function resetForm() {
-  form = { name: "", email: "", adults: 1, teens: 0, kids: 0, bringingFood: false, foodCategory: "", foodItem: "", servingSize: "", extras: [] };
+  form = { name: "", email: "", adults: 1, teens: 0, kids: 0, dishes: [], extras: [] };
 }
 
 function esc(str) {
