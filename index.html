@@ -313,10 +313,10 @@ function renderHome() {
         <p style="font-size:14px;color:#6E6E73;line-height:1.5;margin-bottom:12px">Check the food board to see what's covered and where there's room.</p>
         <p style="font-size:13px;color:#B8420F;font-weight:600">Please RSVP by Sunday, May 17th to help us plan.</p>
       </div>
-      <div style="display:flex;flex-direction:column;gap:4px;max-width:320px;margin:0 auto">
-        <button class="btn-primary" data-nav="rsvp">RSVP</button>
-        <button class="btn-link" data-nav="board">Browse Food Board →</button>
-        <button class="btn-link" data-nav="guests">See Who's Coming →</button>
+      <div style="display:flex;gap:8px;max-width:400px;margin:0 auto">
+        <button class="btn-ghost" data-nav="board" style="flex:1;font-size:13px;padding:14px 8px">Food Board</button>
+        <button data-nav="rsvp" style="flex:1;padding:14px 8px;border-radius:14px;border:none;background:#1D1D1F;color:#fff;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit">RSVP</button>
+        <button class="btn-ghost" data-nav="guests" style="flex:1;font-size:13px;padding:14px 8px">Guests</button>
       </div>
       ${getRsvpList().some(r => r.extras?.length > 0) ? `<div style="max-width:420px;margin:24px auto 0">${renderExtrasBoard()}</div>` : ''}
     </div>`;
@@ -412,7 +412,8 @@ function renderRsvpForm() {
 
       <div class="card">
         <h3 class="card-title">Bringing a Dish?</h3>
-        <p style="font-size:14px;color:#86868B;margin-bottom:16px;line-height:1.5">We invite you to bring your favorite dish or delicacy. Tap one or more categories.</p>
+        <p style="font-size:14px;color:#86868B;margin-bottom:8px;line-height:1.5">We invite you to bring your favorite dish or delicacy. Tap one or more categories.</p>
+        <p style="margin-bottom:16px"><a href="#foodboard-preview" style="font-size:13px;color:#0066CC;font-weight:500;text-decoration:none">See what's already being brought ↓</a></p>
         <div class="cat-grid">${catButtons}</div>
         ${dishFields}
       </div>
@@ -426,7 +427,7 @@ function renderRsvpForm() {
       <button class="btn-primary" id="submitBtn" ${!form.name.trim()||!form.email.trim()?'disabled':''}>${editingId?'Update RSVP':'Submit RSVP'}</button>
 
       <div style="margin-top:32px">
-        <p style="font-size:14px;font-weight:600;color:#86868B;margin-bottom:12px">📋 Current Food Board</p>
+        <p id="foodboard-preview" style="font-size:14px;font-weight:600;color:#86868B;margin-bottom:12px">📋 Current Food Board</p>
         ${renderFoodBoard(true)}
       </div>
     </div>`;
