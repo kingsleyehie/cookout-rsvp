@@ -314,9 +314,9 @@ function renderHome() {
         <p style="font-size:13px;color:#B8420F;font-weight:600">Please RSVP by Sunday, May 17th to help us plan.</p>
       </div>
       <div style="display:flex;gap:8px;max-width:400px;margin:0 auto">
-        <button class="btn-ghost" data-nav="board" style="flex:1;font-size:13px;padding:14px 8px">Food Board</button>
-        <button data-nav="rsvp" style="flex:1;padding:14px 8px;border-radius:14px;border:none;background:#1D1D1F;color:#fff;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit">RSVP</button>
-        <button class="btn-ghost" data-nav="guests" style="flex:1;font-size:13px;padding:14px 8px">Guests</button>
+        <button class="btn-ghost" data-nav="guests" style="flex:1;font-size:12px;padding:14px 8px;letter-spacing:0.5px">GUEST LIST</button>
+        <button data-nav="rsvp" style="flex:1;padding:14px 8px;border-radius:14px;border:none;background:#1D1D1F;color:#fff;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;letter-spacing:0.5px">RSVP</button>
+        <button class="btn-ghost" data-nav="board" style="flex:1;font-size:12px;padding:14px 8px;letter-spacing:0.5px">FOOD LINEUP</button>
       </div>
       ${getRsvpList().some(r => r.extras?.length > 0) ? `<div style="max-width:420px;margin:24px auto 0">${renderExtrasBoard()}</div>` : ''}
     </div>`;
