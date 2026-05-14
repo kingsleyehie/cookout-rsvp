@@ -14,6 +14,8 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: #FBFBFD; color:
 .nav { position: sticky; top: 0; z-index: 50; background: rgba(251,251,253,0.82); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid rgba(0,0,0,0.06); display: flex; justify-content: center; gap: 36px; padding: 14px 20px; }
 .nav button { background: none; border: none; cursor: pointer; font-size: 12px; font-weight: 400; color: #86868B; font-family: inherit; letter-spacing: 0.8px; text-transform: uppercase; padding: 4px 0; }
 .nav button.active { font-weight: 600; color: #1D1D1F; }
+.nav-rsvp { background: #1D1D1F !important; color: #fff !important; border-radius: 8px !important; padding: 8px 16px !important; font-weight: 600 !important; font-size: 12px !important; letter-spacing: 0.8px !important; text-transform: uppercase !important; flex: none !important; }
+.nav-rsvp-active { background: #86868B !important; color: #fff !important; }
 
 .ticker { display: flex; justify-content: center; gap: 12px; flex-wrap: nowrap; padding: 10px 16px; font-size: 12px; font-weight: 500; letter-spacing: 0.2px; color: #86868B; background: #F5F5F7; }
 .ticker .total { color: #B8420F; font-weight: 700; cursor: pointer; }
@@ -21,7 +23,7 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: #FBFBFD; color:
 .ticker.hidden { display: none; }
 
 .body { max-width: 540px; margin: 0 auto; padding: 48px 24px 60px; }
-.body-home { max-width: 600px; margin: 0 auto; padding: 28px 24px 60px; text-align: center; }
+.body-home { max-width: 600px; margin: 0 auto; padding: 16px 24px 60px; text-align: center; }
 
 .card { background: #fff; border-radius: 20px; padding: 24px; margin-bottom: 12px; border: 1px solid rgba(0,0,0,0.06); }
 .card-title { font-size: 17px; font-weight: 700; color: #1D1D1F; margin-bottom: 16px; letter-spacing: -0.3px; }
@@ -255,7 +257,8 @@ function renderTicker() {
 
 function renderNav(active) {
   return `<div class="nav">
-    ${["home","board","guests","rsvp"].map(v => `<button class="${active===v?'active':''}" data-nav="${v}">${v === 'board' ? 'food' : v}</button>`).join("")}
+    ${["home","board","guests"].map(v => `<button class="${active===v?'active':''}" data-nav="${v}">${v === 'board' ? 'food' : v}</button>`).join("")}
+    <button class="nav-rsvp ${active==='rsvp'?'nav-rsvp-active':''}" data-nav="rsvp">RSVP</button>
   </div>`;
 }
 
@@ -295,16 +298,13 @@ function renderHome() {
   const t = getTotals();
   return `
     ${renderNav("home")}
+    ${renderTicker()}
     <div class="body-home">
-      <div style="margin-bottom:12px"><span style="font-size:48px">🔥</span></div>
+      <div style="margin-bottom:6px"><span style="font-size:48px">🔥</span></div>
       <p style="font-size:11px;font-weight:700;letter-spacing:5px;text-transform:uppercase;color:#B8420F;margin-bottom:12px">Memorial Day Weekend</p>
       <h1 style="font-size:48px;font-weight:800;line-height:1;color:#1D1D1F;letter-spacing:-2px;margin-bottom:16px">Cookout.</h1>
       <p style="font-size:19px;color:#1D1D1F;font-weight:600;line-height:1.5;margin-bottom:4px">Saturday, May 23rd · 4–8 PM</p>
       <p style="font-size:14px;color:#86868B;margin-bottom:20px">Address shared upon RSVP</p>
-      ${t.families > 0 ? `<div style="display:inline-flex;align-items:center;gap:8px;background:#F5F5F7;border-radius:20px;padding:10px 20px;margin-bottom:24px;font-size:13px;font-weight:500;color:#86868B">
-        <span style="color:#B8420F;font-weight:700;font-size:15px;cursor:pointer" data-nav="guests">${t.total} attending</span>
-        <span style="opacity:0.3">·</span><span>${t.adults} adults</span><span style="opacity:0.3">·</span><span>${t.teens} teens</span><span style="opacity:0.3">·</span><span>${t.kids} kids</span>
-      </div>` : ''}
       <div style="max-width:420px;margin:0 auto 28px">
         <p style="font-size:16px;color:#424245;line-height:1.6;margin-bottom:14px">Join us for fellowship, food, music, and fun this Memorial Day weekend.</p>
         <p style="font-size:17px;color:#1D1D1F;font-weight:700;line-height:1.4;margin-bottom:14px"><strong>Come as you are — solo, with friends, with the family!</strong></p>
@@ -313,7 +313,7 @@ function renderHome() {
         <p style="font-size:13px;color:#B8420F;font-weight:600">Please RSVP by Sunday, May 17th to help us plan.</p>
       </div>
       <div style="display:flex;flex-direction:column;gap:4px;max-width:320px;margin:0 auto">
-        <button class="btn-primary" data-nav="rsvp">RSVP Now</button>
+        <button class="btn-primary" data-nav="rsvp">RSVP</button>
         <button class="btn-link" data-nav="board">Browse Food Board →</button>
         <button class="btn-link" data-nav="guests">See Who's Coming →</button>
       </div>
