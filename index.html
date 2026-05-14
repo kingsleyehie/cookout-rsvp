@@ -62,17 +62,17 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: #FBFBFD; color:
 .stat-num { font-size: 32px; font-weight: 800; color: #1D1D1F; line-height: 1; }
 .stat-lbl { font-size: 11px; color: #86868B; margin-top: 6px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
 
-.food-card { background: #fff; border-radius: 16px; border: 1px solid rgba(0,0,0,0.06); margin-bottom: 6px; overflow: hidden; }
-.food-header { padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: background 0.2s; }
+.food-card { background: #fff; border-radius: 12px; border: 1px solid rgba(0,0,0,0.06); margin-bottom: 4px; overflow: hidden; }
+.food-header { padding: 10px 16px; display: flex; justify-content: space-between; align-items: center; }
 .food-header:active { background: #FAFAFA; }
-.food-info { display: flex; align-items: center; gap: 14px; }
-.food-emoji { font-size: 26px; }
-.food-label { font-weight: 600; font-size: 15px; color: #1D1D1F; }
-.food-badge { padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+.food-info { display: flex; align-items: center; gap: 10px; }
+.food-emoji { font-size: 20px; }
+.food-label { font-weight: 600; font-size: 14px; color: #1D1D1F; }
+.food-badge { padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
 .food-badge.open { background: #F5F5F7; color: #86868B; }
 .food-badge.filled { background: #FEF3EC; color: #B8420F; }
-.food-items { border-top: 1px solid rgba(0,0,0,0.04); padding: 4px 20px 12px; background: #FAFAFA; }
-.food-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; font-size: 14px; border-bottom: 1px solid rgba(0,0,0,0.04); }
+.food-items { border-top: 1px solid rgba(0,0,0,0.04); padding: 2px 16px 6px; background: #FAFAFA; }
+.food-item { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; font-size: 13px; border-bottom: 1px solid rgba(0,0,0,0.03); }
 .food-item:last-child { border-bottom: none; }
 .food-item-name { color: #1D1D1F; font-weight: 500; }
 .food-item-who { color: #86868B; font-size: 12px; }
@@ -319,12 +319,11 @@ function renderHome() {
 
 function renderBoard() {
   return `${renderNav("board")}${renderTicker()}
-    <div class="body">
-      <h2 class="page-title">Food Board</h2>
-      <p class="page-sub">See what's covered and where there's room.</p>
+    <div class="body" style="padding-top:20px">
+      <h2 style="font-size:28px;font-weight:800;color:#1D1D1F;letter-spacing:-1px;margin-bottom:16px;text-align:center">Food Board</h2>
       ${renderFoodBoard(false)}
-      <div style="margin-top:16px">${renderExtrasBoard()}</div>
-      <button class="btn-primary" style="margin-top:24px" data-nav="rsvp">RSVP & Claim a Dish</button>
+      <div style="margin-top:12px">${renderExtrasBoard()}</div>
+      <button class="btn-primary" style="margin-top:20px" data-nav="rsvp">RSVP & Claim a Dish</button>
     </div>`;
 }
 
