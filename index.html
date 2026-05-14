@@ -269,11 +269,11 @@ function renderFoodBoard(compact) {
     let itemsHtml = "";
     if (isExpanded) {
       itemsHtml = `<div class="food-items">${catItems.map(item =>
-        `<div class="food-item"><span class="food-item-name">${esc(item.item || cat.label)}</span><span class="food-item-who">${esc(item.name)}${item.servingSize ? ' · ' + esc(item.servingSize) : ''}</span></div>`
+        `<div class="food-item"><span class="food-item-name">${esc(item.item || cat.label)}</span><span class="food-item-who">${item.servingSize ? esc(item.servingSize) : ''}</span></div>`
       ).join("")}</div>`;
     } else if (compact && catItems.length > 0) {
       itemsHtml = `<div class="food-items">${catItems.map(item =>
-        `<div class="food-item"><span class="food-item-name">${esc(item.item || cat.label)}</span><span class="food-item-who">${esc(item.name)}</span></div>`
+        `<div class="food-item"><span class="food-item-name">${esc(item.item || cat.label)}</span></div>`
       ).join("")}</div>`;
     }
     return `<div class="food-card ${cls}">
@@ -342,10 +342,8 @@ function renderGuests() {
     const adminBar = `<div class="admin-bar">${adminUnlocked ? `<button class="admin-btn unlocked" id="adminToggle">🔓 Admin · Lock</button>` : `<button class="admin-btn" id="adminToggle">🔒</button>`}</div>`;
     const guestRows = list.map(r => {
       let badges = '';
-      getDishes(r).forEach(d => { const cat = FOOD_CATEGORIES.find(c => c.id === d.category); badges += `<span class="guest-badge food">${cat ? cat.emoji : ''} ${esc(d.item || (cat ? cat.label : ''))}</span>`; });
-      if (r.extras?.length > 0) { badges += `<span class="guest-badge extras">${r.extras.map(e => EXTRAS.find(x => x.id === e)?.label || '').join(', ')}</span>`; }
       const actions = adminUnlocked ? `<div class="guest-actions"><button data-edit="${r.id}">✏️</button><button data-delete="${r.id}">✕</button></div>` : '';
-      return `<div class="guest-row"><div><div class="guest-name">${esc(r.name)}</div><div class="guest-detail">${r.adults} adult${r.adults!==1?'s':''}${(r.teens||0)>0?' · '+r.teens+' teen'+(r.teens!==1?'s':''):''}${r.kids>0?' · '+r.kids+' kid'+(r.kids!==1?'s':''):''}</div>${badges}</div>${actions}</div>`;
+      return `<div class="guest-row"><div><div class="guest-name">${esc(r.name)}</div><div class="guest-detail">${r.adults} adult${r.adults!==1?'s':''}${(r.teens||0)>0?' · '+r.teens+' teen'+(r.teens!==1?'s':''):''}${r.kids>0?' · '+r.kids+' kid'+(r.kids!==1?'s':''):''}</div></div>${actions}</div>`;
     }).join("");
     content = `
       <div class="stat-row">
