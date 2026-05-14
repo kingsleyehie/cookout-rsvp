@@ -345,13 +345,21 @@ function renderGuests() {
       return `<div class="guest-row"><div><div class="guest-name">${esc(r.name)}</div><div class="guest-detail">${r.adults} adult${r.adults!==1?'s':''}${(r.teens||0)>0?' · '+r.teens+' teen'+(r.teens!==1?'s':''):''}${r.kids>0?' · '+r.kids+' kid'+(r.kids!==1?'s':''):''}</div></div>${actions}</div>`;
     }).join("");
     content = `
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px">
+        <div>
+          <h2 style="font-size:28px;font-weight:800;color:#1D1D1F;letter-spacing:-1px;margin-bottom:2px">Guests</h2>
+          <p style="font-size:14px;color:#86868B">${t.families} ${t.families===1?'RSVP':'RSVPs'}</p>
+        </div>
+        ${adminUnlocked ? `<button class="admin-btn unlocked" id="adminToggle">🔓 Lock</button>` : `<button class="admin-btn" id="adminToggle">🔒</button>`}
+      </div>
       <div class="stat-row">
         <div class="stat"><div class="stat-num">${t.adults}</div><div class="stat-lbl">Adults</div></div>
         <div class="stat"><div class="stat-num">${t.teens}</div><div class="stat-lbl">Teens</div></div>
         <div class="stat"><div class="stat-num">${t.kids}</div><div class="stat-lbl">Kids</div></div>
-      </div>${adminBar}<div class="card" style="padding:4px 20px">${guestRows}</div>${renderExtrasBoard()}`;
+      </div>
+      <div class="card" style="padding:4px 20px">${guestRows}</div>${renderExtrasBoard()}`;
   }
-  return `${renderNav("guests")}${renderTicker()}<div class="body" style="padding-top:20px"><h2 style="font-size:28px;font-weight:800;color:#1D1D1F;letter-spacing:-1px;margin-bottom:4px;text-align:center">Guests</h2><p style="font-size:14px;color:#86868B;text-align:center;margin-bottom:16px">${t.families} ${t.families===1?'RSVP':'RSVPs'}</p>${content}</div><div id="pinModal" style="display:none"></div>`;
+  return `${renderNav("guests")}${renderTicker()}<div class="body" style="padding-top:20px">${content}</div><div id="pinModal" style="display:none"></div>`;
 }
 
 function renderRsvpForm() {
