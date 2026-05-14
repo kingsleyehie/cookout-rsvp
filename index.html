@@ -15,7 +15,7 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: #FBFBFD; color:
 .nav button { background: none; border: none; cursor: pointer; font-size: 12px; font-weight: 400; color: #86868B; font-family: inherit; letter-spacing: 0.8px; text-transform: uppercase; padding: 4px 0; }
 .nav button.active { font-weight: 600; color: #1D1D1F; }
 
-.ticker { display: flex; justify-content: center; gap: 24px; flex-wrap: wrap; padding: 12px 20px; font-size: 12px; font-weight: 500; letter-spacing: 0.2px; color: #86868B; background: #F5F5F7; }
+.ticker { display: flex; justify-content: center; gap: 12px; flex-wrap: nowrap; padding: 10px 16px; font-size: 12px; font-weight: 500; letter-spacing: 0.2px; color: #86868B; background: #F5F5F7; }
 .ticker .total { color: #B8420F; font-weight: 700; cursor: pointer; }
 .ticker .sep { opacity: 0.3; }
 .ticker.hidden { display: none; }
@@ -57,10 +57,10 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: #FBFBFD; color:
 .btn-ghost { background: #fff; border: 1px solid rgba(0,0,0,0.08); border-radius: 14px; padding: 14px 20px; font-size: 14px; font-weight: 500; cursor: pointer; color: #424245; font-family: inherit; width: 100%; transition: background 0.2s; }
 .btn-ghost:active { background: #F5F5F7; }
 
-.stat-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 24px; }
-.stat { text-align: center; padding: 22px 8px; background: #fff; border-radius: 16px; border: 1px solid rgba(0,0,0,0.06); }
-.stat-num { font-size: 32px; font-weight: 800; color: #1D1D1F; line-height: 1; }
-.stat-lbl { font-size: 11px; color: #86868B; margin-top: 6px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+.stat-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+.stat { text-align: center; padding: 14px 8px; background: #fff; border-radius: 14px; border: 1px solid rgba(0,0,0,0.06); }
+.stat-num { font-size: 26px; font-weight: 800; color: #1D1D1F; line-height: 1; }
+.stat-lbl { font-size: 10px; color: #86868B; margin-top: 4px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
 
 .food-card { background: #fff; border-radius: 12px; border: 1px solid rgba(0,0,0,0.06); margin-bottom: 4px; overflow: hidden; }
 .food-header { padding: 10px 16px; display: flex; justify-content: space-between; align-items: center; }
@@ -82,7 +82,7 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: #FBFBFD; color:
 .food-card.compact .food-emoji { font-size: 20px; }
 .food-card.compact .food-label { font-size: 14px; }
 
-.guest-row { display: flex; justify-content: space-between; align-items: flex-start; padding: 16px 0; border-bottom: 1px solid rgba(0,0,0,0.04); }
+.guest-row { display: flex; justify-content: space-between; align-items: flex-start; padding: 12px 0; border-bottom: 1px solid rgba(0,0,0,0.04); }
 .guest-row:last-child { border-bottom: none; }
 .guest-name { font-size: 15px; font-weight: 600; color: #1D1D1F; }
 .guest-detail { font-size: 13px; color: #86868B; margin-top: 2px; }
@@ -294,6 +294,7 @@ function renderExtrasBoard() {
 function renderHome() {
   const t = getTotals();
   return `
+    ${renderNav("home")}
     <div class="body-home">
       <div style="margin-bottom:12px"><span style="font-size:48px">🔥</span></div>
       <p style="font-size:11px;font-weight:700;letter-spacing:5px;text-transform:uppercase;color:#B8420F;margin-bottom:12px">Memorial Day Weekend</p>
@@ -331,7 +332,7 @@ function renderBoard() {
 }
 
 function renderGuests() {
-  const list = getRsvpList(); const t = getTotals();
+  const list = getRsvpList().sort((a, b) => (a.name || '').localeCompare(b.name || '')); const t = getTotals();
   let content;
   if (list.length === 0) {
     content = `<div style="text-align:center;padding:60px 20px;color:#86868B"><div style="font-size:48px;margin-bottom:16px">👥</div><p style="font-size:16px;font-weight:600">No RSVPs yet</p><button class="btn-link" style="margin-top:12px" data-nav="rsvp">Be the first →</button></div>`;
@@ -349,7 +350,7 @@ function renderGuests() {
         <div class="stat"><div class="stat-num">${t.kids}</div><div class="stat-lbl">Kids</div></div>
       </div>${adminBar}<div class="card" style="padding:4px 20px">${guestRows}</div>${renderExtrasBoard()}`;
   }
-  return `${renderNav("guests")}${renderTicker()}<div class="body"><h2 class="page-title">Guests</h2><p class="page-sub">${t.families} ${t.families===1?'RSVP':'RSVPs'}</p>${content}</div><div id="pinModal" style="display:none"></div>`;
+  return `${renderNav("guests")}${renderTicker()}<div class="body" style="padding-top:20px"><h2 style="font-size:28px;font-weight:800;color:#1D1D1F;letter-spacing:-1px;margin-bottom:4px;text-align:center">Guests</h2><p style="font-size:14px;color:#86868B;text-align:center;margin-bottom:16px">${t.families} ${t.families===1?'RSVP':'RSVPs'}</p>${content}</div><div id="pinModal" style="display:none"></div>`;
 }
 
 function renderRsvpForm() {
