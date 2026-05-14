@@ -265,19 +265,14 @@ function renderFoodBoard(compact) {
   return FOOD_CATEGORIES.map(cat => {
     const catItems = [];
     list.forEach(r => { getDishes(r).forEach(d => { if (d.category === cat.id) catItems.push({ ...d, name: r.name }); }); });
-    const isExpanded = !compact && expandedCat === cat.id && catItems.length > 0;
     let itemsHtml = "";
-    if (isExpanded) {
+    if (catItems.length > 0) {
       itemsHtml = `<div class="food-items">${catItems.map(item =>
         `<div class="food-item"><span class="food-item-name">${esc(item.item || cat.label)}</span><span class="food-item-who">${item.servingSize ? esc(item.servingSize) : ''}</span></div>`
       ).join("")}</div>`;
-    } else if (compact && catItems.length > 0) {
-      itemsHtml = `<div class="food-items">${catItems.map(item =>
-        `<div class="food-item"><span class="food-item-name">${esc(item.item || cat.label)}</span></div>`
-      ).join("")}</div>`;
     }
     return `<div class="food-card ${cls}">
-      <div class="food-header" ${!compact && catItems.length > 0 ? `data-expand="${cat.id}"` : ''}>
+      <div class="food-header">
         <div class="food-info"><span class="food-emoji">${cat.emoji}</span><span class="food-label">${cat.label}</span></div>
         <span class="food-badge ${catItems.length > 0 ? 'filled' : 'open'}">${catItems.length > 0 ? catItems.length : 'Open'}</span>
       </div>${itemsHtml}</div>`;
@@ -326,7 +321,7 @@ function renderBoard() {
   return `${renderNav("board")}${renderTicker()}
     <div class="body">
       <h2 class="page-title">Food Board</h2>
-      <p class="page-sub">Tap a category to see details.</p>
+      <p class="page-sub">See what's covered and where there's room.</p>
       ${renderFoodBoard(false)}
       <div style="margin-top:16px">${renderExtrasBoard()}</div>
       <button class="btn-primary" style="margin-top:24px" data-nav="rsvp">RSVP & Claim a Dish</button>
@@ -457,12 +452,6 @@ function bindEvents() {
       currentView = target === "board" ? "board" : target;
       expandedCat = null;
       render(); window.scrollTo(0, 0);
-    });
-  });
-  document.querySelectorAll("[data-expand]").forEach(el => {
-    el.addEventListener("click", () => {
-      expandedCat = expandedCat === el.getAttribute("data-expand") ? null : el.getAttribute("data-expand");
-      render();
     });
   });
   document.querySelectorAll("[data-num]").forEach(btn => {
