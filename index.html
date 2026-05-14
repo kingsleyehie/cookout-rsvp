@@ -21,7 +21,7 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: #FBFBFD; color:
 .ticker.hidden { display: none; }
 
 .body { max-width: 540px; margin: 0 auto; padding: 48px 24px 60px; }
-.body-home { max-width: 600px; margin: 0 auto; padding: 40px 24px 60px; text-align: center; }
+.body-home { max-width: 600px; margin: 0 auto; padding: 28px 24px 60px; text-align: center; }
 
 .card { background: #fff; border-radius: 20px; padding: 24px; margin-bottom: 12px; border: 1px solid rgba(0,0,0,0.06); }
 .card-title { font-size: 17px; font-weight: 700; color: #1D1D1F; margin-bottom: 16px; letter-spacing: -0.3px; }
@@ -294,13 +294,16 @@ function renderExtrasBoard() {
 function renderHome() {
   const t = getTotals();
   return `
-    ${renderTicker()}
     <div class="body-home">
       <div style="margin-bottom:12px"><span style="font-size:48px">🔥</span></div>
       <p style="font-size:11px;font-weight:700;letter-spacing:5px;text-transform:uppercase;color:#B8420F;margin-bottom:12px">Memorial Day Weekend</p>
       <h1 style="font-size:48px;font-weight:800;line-height:1;color:#1D1D1F;letter-spacing:-2px;margin-bottom:16px">Cookout.</h1>
       <p style="font-size:19px;color:#1D1D1F;font-weight:600;line-height:1.5;margin-bottom:4px">Saturday, May 23rd · 4–8 PM</p>
-      <p style="font-size:14px;color:#86868B;margin-bottom:28px">Address shared upon RSVP</p>
+      <p style="font-size:14px;color:#86868B;margin-bottom:20px">Address shared upon RSVP</p>
+      ${t.families > 0 ? `<div style="display:inline-flex;align-items:center;gap:8px;background:#F5F5F7;border-radius:20px;padding:10px 20px;margin-bottom:24px;font-size:13px;font-weight:500;color:#86868B">
+        <span style="color:#B8420F;font-weight:700;font-size:15px;cursor:pointer" data-nav="guests">${t.total} attending</span>
+        <span style="opacity:0.3">·</span><span>${t.adults} adults</span><span style="opacity:0.3">·</span><span>${t.teens} teens</span><span style="opacity:0.3">·</span><span>${t.kids} kids</span>
+      </div>` : ''}
       <div style="max-width:420px;margin:0 auto 28px">
         <p style="font-size:16px;color:#424245;line-height:1.6;margin-bottom:14px">Join us for fellowship, food, music, and fun this Memorial Day weekend.</p>
         <p style="font-size:17px;color:#1D1D1F;font-weight:700;line-height:1.4;margin-bottom:14px"><strong>Come as you are — solo, with friends, with the family!</strong></p>
