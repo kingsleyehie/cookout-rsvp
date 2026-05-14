@@ -208,6 +208,7 @@ let adminUnlocked = false;
 let editingId = null;
 let lookupEmail = "";
 let lookupError = "";
+let showLookup = false;
 let form = { name: "", email: "", adults: 1, teens: 0, kids: 0, dishes: [], extras: [] };
 let submitted = false;
 let expandedCat = null;
@@ -384,15 +385,14 @@ function renderRsvpForm() {
   const extraChips = EXTRAS.map(ex => `<button class="chip ${form.extras.includes(ex.id)?'active':''}" data-extra="${ex.id}">${ex.emoji} ${ex.label}</button>`).join("");
 
   return `${renderNav("rsvp")}${renderTicker()}
-    <div class="body">
-      <h2 class="page-title">${editingId ? 'Update RSVP' : 'RSVP'}</h2>
-      <p style="font-size:15px;color:#86868B;text-align:center;margin-bottom:4px">Saturday, May 23rd · 4–8 PM</p>
-      <p style="font-size:12px;color:#B8420F;text-align:center;font-weight:600;margin-bottom:40px">Please RSVP by Sunday, May 17th</p>
+    <div class="body" style="padding-top:20px">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:16px">
+        <h2 style="font-size:28px;font-weight:800;color:#1D1D1F;letter-spacing:-1px">${editingId ? 'Update RSVP' : 'RSVP'}</h2>
+        ${!editingId ? `<button id="toggleLookup" style="background:none;border:none;font-size:12px;color:#0066CC;font-family:inherit;cursor:pointer;font-weight:500">Update RSVP</button>` : ''}
+      </div>
 
-      ${!editingId ? `<div class="lookup-card">
-        <div style="font-size:14px;font-weight:600;color:#424245;margin-bottom:6px">Already RSVP'd?</div>
-        <p style="font-size:13px;color:#86868B;margin:0 0 10px;line-height:1.4">Enter your email to update your RSVP.</p>
-        <div style="display:flex;gap:8px"><input class="input" id="lookupEmail" type="email" placeholder="Your email" value="${esc(lookupEmail)}" style="flex:1"><button class="btn-ghost" id="lookupBtn" style="width:auto;padding:12px 16px;white-space:nowrap">Look Up</button></div>
+      ${showLookup && !editingId ? `<div class="lookup-card" style="margin-bottom:12px">
+        <div style="display:flex;gap:8px"><input class="input" id="lookupEmail" type="email" placeholder="Enter your email to find your RSVP" value="${esc(lookupEmail)}" style="flex:1"><button class="btn-ghost" id="lookupBtn" style="width:auto;padding:12px 16px;white-space:nowrap">Look Up</button></div>
         ${lookupError ? `<p style="font-size:13px;color:#FF3B30;margin:8px 0 0">${lookupError}</p>` : ''}
       </div>` : ''}
 
@@ -451,7 +451,7 @@ function bindEvents() {
   document.querySelectorAll("[data-nav]").forEach(btn => {
     btn.addEventListener("click", () => {
       const target = btn.getAttribute("data-nav");
-      if (target === "rsvp") { submitted = false; resetForm(); editingId = null; lookupEmail = ""; lookupError = ""; }
+      if (target === "rsvp") { submitted = false; resetForm(); editingId = null; lookupEmail = ""; lookupError = ""; showLookup = false; }
       currentView = target === "board" ? "board" : target;
       expandedCat = null;
       render(); window.scrollTo(0, 0);
@@ -469,6 +469,8 @@ function bindEvents() {
   if (emailInput) { emailInput.addEventListener("input", () => { form.email = emailInput.value; updateSubmitBtn(); }); emailInput.addEventListener("change", () => { form.email = emailInput.value; }); }
   const lookupInput = document.getElementById("lookupEmail");
   if (lookupInput) { lookupInput.addEventListener("input", () => { lookupEmail = lookupInput.value; }); }
+  const toggleLookup = document.getElementById("toggleLookup");
+  if (toggleLookup) { toggleLookup.addEventListener("click", () => { showLookup = !showLookup; render(); }); }
   const lookupBtn = document.getElementById("lookupBtn");
   if (lookupBtn) {
     lookupBtn.addEventListener("click", () => {
