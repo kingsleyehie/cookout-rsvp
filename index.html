@@ -351,7 +351,14 @@ function renderGuests() {
         </div>
         ${adminUnlocked ? `<button class="admin-btn unlocked" id="adminToggle">🔓 Lock</button>` : `<button class="admin-btn" id="adminToggle">🔒</button>`}
       </div>
-      <div class="card" style="padding:4px 20px">${guestRows}</div>${renderExtrasBoard()}`;
+      <div class="card" style="padding:4px 20px">${guestRows}</div>
+      ${adminUnlocked ? `<div class="card" style="margin-top:12px">
+        <h3 class="card-title">📧 Email List</h3>
+        <p style="font-size:12px;color:#86868B;margin-bottom:10px">Tap to copy all emails for BCC</p>
+        <div id="emailList" style="font-size:13px;color:#424245;line-height:1.8;word-break:break-all;background:#F5F5F7;border-radius:10px;padding:12px;cursor:pointer;border:1px solid rgba(0,0,0,0.06)" onclick="navigator.clipboard.writeText(this.innerText).then(()=>{document.getElementById('copyMsg').style.display='block';setTimeout(()=>{document.getElementById('copyMsg').style.display='none'},2000)})">${list.filter(r => r.email).map(r => r.email).join(', ')}</div>
+        <p id="copyMsg" style="display:none;font-size:13px;color:#34A853;font-weight:600;margin-top:8px">Copied!</p>
+      </div>` : ''}
+      ${renderExtrasBoard()}`;
   }
   return `${renderNav("guests")}${renderTicker()}<div class="body" style="padding-top:20px">${content}</div><div id="pinModal" style="display:none"></div>`;
 }
