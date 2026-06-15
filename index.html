@@ -2,147 +2,37 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Memorial Day Cookout</title>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>4th of July Cookout</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Playfair+Display:wght@800;900&family=Great+Vibes&family=Kaushan+Script&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <style>
-* { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: 'Plus Jakarta Sans', sans-serif; background: #FBFBFD; color: #1D1D1F; min-height: 100vh; -webkit-font-smoothing: antialiased; }
-
-.nav { position: sticky; top: 0; z-index: 50; background: rgba(251,251,253,0.82); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid rgba(0,0,0,0.06); display: flex; justify-content: center; gap: 36px; padding: 14px 20px; }
-.nav button { background: none; border: none; cursor: pointer; font-size: 12px; font-weight: 400; color: #86868B; font-family: inherit; letter-spacing: 0.8px; text-transform: uppercase; padding: 4px 0; }
-.nav button.active { font-weight: 600; color: #1D1D1F; }
-.nav-rsvp { background: #1D1D1F !important; color: #fff !important; border-radius: 8px !important; padding: 8px 16px !important; font-weight: 600 !important; font-size: 12px !important; letter-spacing: 0.8px !important; text-transform: uppercase !important; flex: none !important; }
-.nav-rsvp-active { background: #86868B !important; color: #fff !important; }
-
-.ticker { display: flex; justify-content: center; gap: 12px; flex-wrap: nowrap; padding: 10px 16px; font-size: 12px; font-weight: 500; letter-spacing: 0.2px; color: #86868B; background: #F5F5F7; position: sticky; top: 46px; z-index: 40; }
-.ticker .total { color: #B8420F; font-weight: 700; cursor: pointer; }
-.ticker .sep { opacity: 0.3; }
-.ticker.hidden { display: none; }
-
-.body { max-width: 540px; margin: 0 auto; padding: 48px 24px 60px; }
-.body-home { max-width: 600px; margin: 0 auto; padding: 16px 24px 60px; text-align: center; }
-
-.card { background: #fff; border-radius: 20px; padding: 24px; margin-bottom: 12px; border: 1px solid rgba(0,0,0,0.06); }
-.card-title { font-size: 17px; font-weight: 700; color: #1D1D1F; margin-bottom: 16px; letter-spacing: -0.3px; }
-
-.page-title { font-size: 40px; font-weight: 800; color: #1D1D1F; letter-spacing: -1.5px; margin-bottom: 8px; text-align: center; }
-.page-sub { font-size: 15px; color: #86868B; text-align: center; margin-bottom: 40px; }
-
-.label { display: block; font-size: 13px; font-weight: 500; color: #86868B; margin-bottom: 6px; margin-top: 18px; }
-.label:first-child { margin-top: 0; }
-.input { width: 100%; padding: 14px 16px; border-radius: 12px; border: 1px solid rgba(0,0,0,0.1); background: #F5F5F7; font-size: 15px; font-family: inherit; color: #1D1D1F; outline: none; transition: border-color 0.2s; }
-.input:focus { border-color: #B8420F; }
-.select { width: 100%; padding: 14px 16px; border-radius: 12px; border: 1px solid rgba(0,0,0,0.1); background: #F5F5F7; font-size: 15px; font-family: inherit; color: #1D1D1F; outline: none; appearance: none; }
-
-.num-row { display: flex; align-items: center; gap: 16px; }
-.num-btn { width: 36px; height: 36px; border-radius: 50%; border: 1px solid rgba(0,0,0,0.1); background: #F5F5F7; font-size: 16px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #424245; font-family: inherit; transition: background 0.2s; }
-.num-btn:active { background: #E8E8ED; }
-.num-val { font-size: 18px; font-weight: 700; min-width: 24px; text-align: center; color: #1D1D1F; }
-
-.cat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-.cat-btn { padding: 14px 12px; border-radius: 14px; border: 1px solid rgba(0,0,0,0.08); background: #fff; cursor: pointer; font-size: 13px; font-weight: 500; color: #424245; font-family: inherit; text-align: left; transition: all 0.2s; }
-.cat-btn.active { border-color: #B8420F; background: #FEF3EC; color: #B8420F; font-weight: 600; }
-.cat-btn .count { font-size: 11px; color: #86868B; margin-top: 2px; }
-.cat-btn .emoji { font-size: 18px; }
-
-.chip-row { display: flex; flex-wrap: wrap; gap: 8px; }
-.chip { padding: 8px 14px; border-radius: 20px; border: 1px solid rgba(0,0,0,0.08); background: #fff; cursor: pointer; font-size: 13px; font-weight: 400; color: #424245; font-family: inherit; transition: all 0.2s; }
-.chip.active { border-color: #34A853; background: #F0F7EA; font-weight: 600; color: #1B6D2B; }
-
-.btn-primary { width: 100%; padding: 18px; border-radius: 14px; border: none; background: #1D1D1F; color: #fff; font-size: 16px; font-weight: 600; cursor: pointer; font-family: inherit; letter-spacing: -0.2px; transition: transform 0.15s, opacity 0.15s; }
-.btn-primary:active { transform: scale(0.98); opacity: 0.9; }
-.btn-primary:disabled { background: #C7C7CC; cursor: not-allowed; }
-.btn-link { width: 100%; padding: 14px; border-radius: 14px; border: none; background: transparent; color: #0066CC; font-size: 15px; font-weight: 500; cursor: pointer; font-family: inherit; }
-.btn-ghost { background: #fff; border: 1px solid rgba(0,0,0,0.08); border-radius: 14px; padding: 14px 20px; font-size: 14px; font-weight: 500; cursor: pointer; color: #424245; font-family: inherit; width: 100%; transition: background 0.2s; }
-.btn-ghost:active { background: #F5F5F7; }
-
-.stat-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 12px; }
-.stat { text-align: center; padding: 14px 8px; background: #fff; border-radius: 14px; border: 1px solid rgba(0,0,0,0.06); }
-.stat-num { font-size: 26px; font-weight: 800; color: #1D1D1F; line-height: 1; }
-.stat-lbl { font-size: 10px; color: #86868B; margin-top: 4px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
-
-.food-card { background: #fff; border-radius: 12px; border: 1px solid rgba(0,0,0,0.06); margin-bottom: 4px; overflow: hidden; }
-.food-header { padding: 10px 16px; display: flex; justify-content: space-between; align-items: center; }
-.food-header:active { background: #FAFAFA; }
-.food-info { display: flex; align-items: center; gap: 10px; }
-.food-emoji { font-size: 20px; }
-.food-label { font-weight: 600; font-size: 14px; color: #1D1D1F; }
-.food-badge { padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
-.food-badge.open { background: #F5F5F7; color: #86868B; }
-.food-badge.filled { background: #FEF3EC; color: #B8420F; }
-.food-items { border-top: 1px solid rgba(0,0,0,0.04); padding: 2px 16px 6px; background: #FAFAFA; }
-.food-item { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; font-size: 13px; border-bottom: 1px solid rgba(0,0,0,0.03); }
-.food-item:last-child { border-bottom: none; }
-.food-item-name { color: #1D1D1F; font-weight: 500; }
-.food-item-who { color: #86868B; font-size: 12px; }
-
-.food-card.compact { margin-bottom: 4px; }
-.food-card.compact .food-header { padding: 12px 16px; }
-.food-card.compact .food-emoji { font-size: 20px; }
-.food-card.compact .food-label { font-size: 14px; }
-
-.guest-row { display: flex; justify-content: space-between; align-items: flex-start; padding: 12px 0; border-bottom: 1px solid rgba(0,0,0,0.04); }
-.guest-row:last-child { border-bottom: none; }
-.guest-name { font-size: 15px; font-weight: 600; color: #1D1D1F; }
-.guest-detail { font-size: 13px; color: #86868B; margin-top: 2px; }
-.guest-badge { display: inline-block; margin-top: 4px; margin-right: 4px; padding: 4px 10px; border-radius: 10px; font-size: 11px; font-weight: 600; }
-.guest-badge.food { background: #FEF3EC; color: #B8420F; }
-.guest-badge.extras { background: #F0F7EA; color: #1B6D2B; }
-.guest-actions { display: flex; gap: 2px; flex-shrink: 0; }
-.guest-actions button { background: none; border: none; cursor: pointer; font-size: 16px; padding: 4px 6px; opacity: 0.4; transition: opacity 0.2s; }
-.guest-actions button:hover { opacity: 1; }
-
-.extras-card { background: #fff; border-radius: 20px; padding: 24px; border: 1px solid rgba(0,0,0,0.06); margin-top: 16px; }
-.extra-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; border-radius: 12px; margin-bottom: 6px; }
-.extra-row:last-child { margin-bottom: 0; }
-.extra-row.filled { background: #F0F7EA; border: 1px solid rgba(52,168,83,0.12); }
-.extra-row.empty { background: #F5F5F7; border: 1px solid rgba(0,0,0,0.04); }
-.extra-info { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; color: #1D1D1F; }
-.extra-who { font-size: 12px; color: #1B6D2B; }
-.extra-open { font-size: 12px; color: #86868B; font-weight: 500; }
-
-.dish-field { background: #FAFAFA; border: 1px solid rgba(0,0,0,0.06); border-radius: 14px; padding: 16px; margin-top: 10px; }
-.dish-field-title { font-size: 14px; font-weight: 700; color: #B8420F; margin-bottom: 10px; }
-.existing-box { margin-bottom: 10px; background: #F5F5F7; border-radius: 10px; padding: 10px 14px; border: 1px solid rgba(0,0,0,0.04); }
-.existing-box .etitle { font-size: 11px; font-weight: 700; color: #86868B; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
-.existing-box .eitem { font-size: 13px; color: #424245; padding: 3px 0; }
-.existing-box .eitem span { color: #86868B; }
-
-.admin-bar { display: flex; justify-content: flex-end; margin-bottom: 8px; }
-.admin-btn { background: #F5F5F7; border: 1px solid rgba(0,0,0,0.06); border-radius: 8px; padding: 6px 12px; font-size: 12px; font-weight: 500; color: #86868B; cursor: pointer; font-family: inherit; }
-.admin-btn.unlocked { background: #F0F7EA; border-color: rgba(52,168,83,0.15); color: #1B6D2B; }
-
-.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.3); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; z-index: 100; padding: 20px; }
-.modal { background: #fff; border-radius: 20px; padding: 32px 28px; max-width: 320px; width: 100%; text-align: center; }
-.modal h3 { margin: 0 0 4px; font-size: 18px; color: #1D1D1F; }
-.modal p { font-size: 13px; color: #86868B; margin: 0 0 16px; }
-.modal input { width: 120px; padding: 12px 16px; border-radius: 12px; border: 1px solid rgba(0,0,0,0.1); background: #F5F5F7; font-size: 20px; font-family: inherit; text-align: center; letter-spacing: 8px; outline: none; }
-.modal input.error { border-color: #FF3B30; }
-.modal .error-msg { font-size: 13px; color: #FF3B30; margin: 8px 0 0; }
-.modal-btns { display: flex; gap: 8px; margin-top: 16px; }
-.modal-btns button { flex: 1; padding: 12px; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit; }
-.modal-btns .cancel { border: 1px solid rgba(0,0,0,0.08); background: #fff; color: #424245; }
-.modal-btns .unlock { border: none; background: #1D1D1F; color: white; }
-
-.success-card { background: #fff; border: 1px solid rgba(52,168,83,0.15); border-radius: 20px; padding: 40px 24px; text-align: center; margin-bottom: 16px; }
-.success-card h2 { margin: 0 0 8px; font-size: 22px; color: #1D1D1F; letter-spacing: -0.5px; }
-.success-card p { margin: 0; font-size: 15px; color: #86868B; line-height: 1.5; }
-
-.lookup-card { background: #F5F5F7; border: 1px solid rgba(0,0,0,0.04); border-radius: 16px; padding: 20px; margin-bottom: 12px; }
-
-.flex-row { display: flex; gap: 8px; }
-.spacer { height: 12px; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --cream:#FAF6EE; --paper:#FFFDF8; --navy:#1E2A56; --red:#B22234;
+    --gold:#C4993B; --green:#2D6A4F; --ink:#2B3252; --soft:#8B8FA3; --line:#E8E1D2;
+  }
+  body { font-family:'Outfit',sans-serif; background:var(--cream); color:var(--ink); -webkit-font-smoothing:antialiased; }
+  button { font-family:inherit; cursor:pointer; }
+  input, select { font-family:inherit; }
+  a { color:inherit; }
+  @keyframes burstLoop { 0%{stroke-dashoffset:40;opacity:0;} 18%{opacity:.95;} 42%{stroke-dashoffset:0;opacity:.9;} 62%{opacity:0;} 100%{stroke-dashoffset:40;opacity:0;} }
+  @keyframes twinkle { 0%,100%{opacity:.15;} 50%{opacity:.9;} }
+  @keyframes flourishDraw { from{stroke-dashoffset:240;} to{stroke-dashoffset:0;} }
+  @keyframes riseIn { from{opacity:0;transform:translateY(14px);} to{opacity:1;transform:translateY(0);} }
+  .rise { opacity:0; animation:riseIn .7s cubic-bezier(0.22,1,0.36,1) forwards; }
+  @media (prefers-reduced-motion: reduce){ *{animation:none!important;transition:none!important;} .rise{opacity:1;} }
 </style>
 </head>
 <body>
-
 <div id="app"></div>
-
 <script>
+// ───────────────── CONFIG ─────────────────
 const DB_URL = "https://cookout-rsvp-default-rtdb.firebaseio.com";
 const ADMIN_PIN = "0523";
+const EVENT_ADDRESS = "21 Ridge Road, Whitehouse Station, NJ 08889 (Black house with white & brown accents)";
 
 const EMAILJS_PUBLIC_KEY = "lTqtiCTbkRv43PzBQ";
 const EMAILJS_SERVICE_ID = "service_9q42hxc";
@@ -150,55 +40,97 @@ const EMAILJS_TEMPLATE_ID = "template_rplm4eh";
 const EMAILJS_ADMIN_TEMPLATE_ID = "template_6ugpk7s";
 emailjs.init(EMAILJS_PUBLIC_KEY);
 
-function getDishes(rsvp) {
-  if (rsvp.dishes && rsvp.dishes.length > 0) return rsvp.dishes;
-  if (rsvp.foodCategory) return [{ category: rsvp.foodCategory, item: rsvp.foodItem || "", servingSize: rsvp.servingSize || "" }];
-  return [];
+// ───────────────── ZIP → TOWN ─────────────────
+// NJ zip → town lookup, ~50mi radius of Morristown NJ (07960).
+// Covers Morris, Somerset, Hunterdon, Union, Essex, Passaic, Bergen,
+// Middlesex, Warren, Sussex, Mercer (north), Hudson + a few border towns.
+const ZIP_TOWNS = {
+  // Hunterdon
+  "08822":"Flemington","08801":"Annandale","08802":"Asbury","08803":"Baptistown","08804":"Bloomsbury",
+  "08809":"Clinton","08825":"Frenchtown","08826":"Glen Gardner","08827":"Hampton","08829":"High Bridge",
+  "08833":"Lebanon","08848":"Milford","08858":"Oldwick","08867":"Pittstown","08868":"Quakertown",
+  "08869":"Raritan","08870":"Readington","08887":"Three Bridges","08889":"Whitehouse Station","08888":"Whitehouse",
+  "08530":"Lambertville","08551":"Ringoes","08557":"Sergeantsville","08559":"Stockton","08822":"Flemington",
+  // Somerset
+  "08807":"Bridgewater","08805":"Bound Brook","08810":"Dayton","08812":"Dunellen","08820":"Edison",
+  "08821":"Finderne","08823":"Franklin Park","08835":"Manville","08836":"Martinsville","08844":"Hillsborough",
+  "08846":"Middlesex","08853":"Neshanic Station","08873":"Somerset","08876":"Branchburg","08880":"South Bound Brook",
+  "08884":"Spotswood","08502":"Belle Mead","08540":"Princeton","08558":"Skillman","07920":"Basking Ridge",
+  "07921":"Bedminster","07924":"Bernardsville","07931":"Far Hills","07934":"Gladstone","07938":"Liberty Corner",
+  "07939":"Lyons","07977":"Peapack","08502":"Belle Mead","08805":"Bound Brook","08558":"Skillman",
+  // Morris
+  "07960":"Morristown","07961":"Morristown","07950":"Morris Plains","07930":"Chester","07927":"Cedar Knolls",
+  "07932":"Florham Park","07933":"Gillette","07935":"Green Village","07936":"East Hanover","07940":"Madison",
+  "07945":"Mendham","07946":"Millington","07950":"Morris Plains","07960":"Morristown","07970":"Mount Freedom",
+  "07976":"New Vernon","07980":"Stirling","07005":"Boonton","07034":"Lake Hiawatha","07035":"Lincoln Park",
+  "07045":"Montville","07046":"Mountain Lakes","07054":"Parsippany","07058":"Pine Brook","07082":"Towaco",
+  "07440":"Pequannock","07444":"Pompton Plains","07801":"Dover","07803":"Mine Hill","07834":"Denville",
+  "07842":"Hibernia","07847":"Kenvil","07850":"Landing","07852":"Ledgewood","07853":"Long Valley",
+  "07856":"Mount Arlington","07857":"Netcong","07866":"Rockaway","07869":"Randolph","07870":"Schooley's Mountain",
+  "07876":"Succasunna","07885":"Wharton","07920":"Basking Ridge","07928":"Chatham","07927":"Cedar Knolls",
+  // Union
+  "07016":"Cranford","07023":"Fanwood","07027":"Garwood","07033":"Kenilworth","07036":"Linden",
+  "07060":"Plainfield","07062":"Plainfield","07063":"Plainfield","07065":"Rahway","07066":"Clark",
+  "07067":"Colonia","07076":"Scotch Plains","07081":"Springfield","07083":"Union","07088":"Vauxhall",
+  "07090":"Westfield","07092":"Mountainside","07201":"Elizabeth","07202":"Elizabeth","07203":"Roselle",
+  "07204":"Roselle Park","07205":"Hillside","07206":"Elizabeth","07208":"Elizabeth","07901":"Summit",
+  "07922":"Berkeley Heights","07974":"New Providence","07059":"Warren","07069":"Watchung",
+  // Essex
+  "07003":"Bloomfield","07004":"Fairfield","07006":"Caldwell","07009":"Cedar Grove","07017":"East Orange",
+  "07018":"East Orange","07021":"Essex Fells","07028":"Glen Ridge","07039":"Livingston","07040":"Maplewood",
+  "07041":"Millburn","07042":"Montclair","07043":"Montclair","07044":"Verona","07050":"Orange",
+  "07052":"West Orange","07068":"Roseland","07078":"Short Hills","07079":"South Orange","07004":"Fairfield",
+  "07006":"Caldwell","07102":"Newark","07103":"Newark","07104":"Newark","07106":"Newark","07107":"Newark",
+  // Passaic
+  "07011":"Clifton","07012":"Clifton","07013":"Clifton","07014":"Clifton","07424":"Little Falls",
+  "07442":"Pompton Lakes","07457":"Riverdale","07470":"Wayne","07480":"West Milford","07501":"Paterson",
+  "07502":"Paterson","07503":"Paterson","07504":"Paterson","07505":"Paterson","07506":"Hawthorne",
+  "07512":"Totowa","07513":"Paterson","07522":"Paterson","07524":"Paterson","07055":"Passaic",
+  // Bergen (closer towns)
+  "07401":"Allendale","07410":"Fair Lawn","07417":"Franklin Lakes","07432":"Midland Park","07436":"Oakland",
+  "07446":"Ramsey","07450":"Ridgewood","07452":"Glen Rock","07458":"Saddle River","07463":"Waldwick",
+  "07481":"Wyckoff","07601":"Hackensack","07644":"Lodi","07652":"Paramus","07656":"Park Ridge",
+  // Middlesex
+  "08816":"East Brunswick","08817":"Edison","08824":"Kendall Park","08828":"Helmetta","08830":"Iselin",
+  "08831":"Monroe","08832":"Keasbey","08837":"Edison","08840":"Metuchen","08846":"Middlesex",
+  "08850":"Milltown","08852":"Monmouth Junction","08854":"Piscataway","08857":"Old Bridge","08859":"Parlin",
+  "08861":"Perth Amboy","08863":"Fords","08872":"Sayreville","08879":"South Amboy","08882":"South River",
+  "08901":"New Brunswick","08902":"North Brunswick","08904":"Highland Park","08820":"Edison","08837":"Edison",
+  // Warren
+  "07820":"Allamuchy","07823":"Belvidere","07825":"Blairstown","07831":"Changewater","07832":"Columbia",
+  "07840":"Hackettstown","07844":"Hope","07863":"Oxford","07865":"Port Murray","07882":"Washington",
+  "08865":"Phillipsburg","07838":"Great Meadows","07882":"Washington",
+  // Sussex
+  "07416":"Franklin","07419":"Hamburg","07421":"Hewitt","07422":"Highland Lakes","07435":"Newfoundland",
+  "07438":"Oak Ridge","07439":"Ogdensburg","07460":"Stockholm","07461":"Sussex","07462":"Vernon",
+  "07822":"Augusta","07826":"Branchville","07843":"Hopatcong","07848":"Lafayette","07860":"Newton",
+  "07871":"Sparta","07874":"Stanhope","07875":"Swartswood","07876":"Succasunna","07881":"Wallpack Center",
+  // Hudson (border)
+  "07030":"Hoboken","07086":"Weehawken","07087":"Union City","07302":"Jersey City","07304":"Jersey City",
+  "07305":"Jersey City","07306":"Jersey City","07307":"Jersey City","07310":"Jersey City","07047":"North Bergen",
+  // Mercer (north)
+  "08534":"Pennington","08540":"Princeton","08550":"Windsor","08560":"Titusville","08648":"Lawrenceville",
+  "08611":"Trenton","08618":"Trenton","08628":"Trenton","08638":"Trenton","08690":"Hamilton"
+};
+function townFromZip(zip) {
+  if (!zip) return null;
+  const z = String(zip).trim().slice(0,5);
+  return ZIP_TOWNS[z] || null;
 }
 
-function buildRsvpSummary(entry) {
-  let parts = [];
-  parts.push(`${entry.adults} adult${entry.adults !== 1 ? 's' : ''}`);
-  if (entry.teens > 0) parts.push(`${entry.teens} teen${entry.teens !== 1 ? 's' : ''}`);
-  if (entry.kids > 0) parts.push(`${entry.kids} kid${entry.kids !== 1 ? 's' : ''}`);
-  let summary = parts.join(', ');
-  const dishes = getDishes(entry);
-  if (dishes.length > 0) {
-    const dishNames = dishes.map(d => d.item || FOOD_CATEGORIES.find(c => c.id === d.category)?.label || d.category).join(', ');
-    summary += ` · Bringing: ${dishNames}`;
-  }
-  return summary;
-}
 
-async function sendConfirmationEmail(entry) {
-  if (!entry.email) return;
-  try {
-    await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, { to_email: entry.email, name: entry.name, rsvp_summary: buildRsvpSummary(entry) });
-  } catch (e) { console.error("Email send failed:", e); }
-}
-
-async function sendAdminNotification(entry) {
-  try {
-    await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_ADMIN_TEMPLATE_ID, { name: entry.name, to_email: entry.email || "Not provided", rsvp_summary: buildRsvpSummary(entry) });
-  } catch (e) { console.error("Admin notification failed:", e); }
-}
-
+// ───────────────── DATA MODEL ─────────────────
 const FOOD_CATEGORIES = [
-  { id: "rice", label: "Rice & Starches", emoji: "🍚", examples: "Jollof, fried rice, boiled yam, fried yam, native rice, etc." },
-  { id: "protein", label: "Proteins & Meats", emoji: "🍖", examples: "Suya, goat, chicken, fish, turkey, etc." },
-  { id: "soup", label: "Soups & Stews", emoji: "🍲", examples: "Egusi, pepper soup, okra, etc." },
-  { id: "swallow", label: "Swallow", emoji: "🫓", examples: "Pounded yam, eba, amala, fufu, semovita, etc." },
-  { id: "appetizer", label: "Appetizers & Small Chops", emoji: "🥟", examples: "Meat pies, puff-puff, moi moi, spring rolls, etc." },
-  { id: "sides", label: "Sides & Salads", emoji: "🥗", examples: "Plantain, coleslaw, beans, etc." },
-  { id: "dessert", label: "Desserts", emoji: "🍰", examples: "Cake, chin chin, fruit platter, etc." },
-  { id: "drinks", label: "Drinks & Beverages", emoji: "🥤", examples: "Zobo, chapman, fruit punch, malt, lemonade, ginger drink, etc." },
+  { id:"rice", label:"Rice & Starches", examples:"Jollof, mac & cheese, fried rice, pasta salad, yam" },
+  { id:"protein", label:"Proteins & Meats", examples:"Suya, wings, goat, ribs, chicken, pulled pork" },
+  { id:"soup", label:"Soups & Stews", examples:"Egusi, chili, pepper soup" },
+  { id:"swallow", label:"Swallow", examples:"Pounded yam, eba, amala, fufu, semovita" },
+  { id:"sides", label:"Sides", examples:"Plantain, coleslaw, beans, corn on the cob" },
+  { id:"appetizer", label:"Small Chops & Snacks", examples:"Puff-puff, deviled eggs, meat pies, chips & dip" },
+  { id:"dessert", label:"Desserts", examples:"Chin chin, brownies, cake, cookies, pie" },
+  { id:"drinks", label:"Drinks", examples:"Zobo, lemonade, juice, punch, sweet tea" },
 ];
-
-const EXTRAS = [
-  { id: "games", label: "Outdoor Games", emoji: "⚽" },
-  { id: "chairs", label: "Extra Chairs", emoji: "🪑" },
-  { id: "togo", label: "To-Go Containers", emoji: "📦" },
-];
+const SERVING_SIZES = ["Small (5–10)","Medium (10–20)","Large (20+)","Extra Large (30+)","Half Pan","Full Pan"];
 
 let rsvps = {};
 let currentView = "home";
@@ -207,384 +139,479 @@ let editingId = null;
 let lookupEmail = "";
 let lookupError = "";
 let showLookup = false;
-let form = { name: "", email: "", adults: 1, teens: 0, kids: 0, dishes: [], extras: [] };
 let submitted = false;
-let expandedCat = null;
-let pollInterval = null;
+let pinError = "";
+let form = freshForm();
+function freshForm(){ return { name:"", email:"", adults:1, teens:0, kids:0, dishes:[], carpool:null, seats:2, zip:"", phone:"" }; }
 
-async function loadRsvps() {
+// ───────────────── FIREBASE ─────────────────
+async function loadRsvps(){
   try { const res = await fetch(`${DB_URL}/rsvps.json`); const data = await res.json(); rsvps = data || {}; render(); }
-  catch (e) { console.error("Load failed:", e); }
+  catch(e){ console.error("Load failed:",e); }
 }
-async function saveRsvp(id, data) {
+async function saveRsvp(id, data){
   try {
-    if (id) { await fetch(`${DB_URL}/rsvps/${id}.json`, { method: "PUT", body: JSON.stringify(data) }); }
-    else { const res = await fetch(`${DB_URL}/rsvps.json`, { method: "POST", body: JSON.stringify(data) }); id = (await res.json()).name; }
+    if(id){ await fetch(`${DB_URL}/rsvps/${id}.json`,{method:"PUT",body:JSON.stringify(data)}); }
+    else { const res = await fetch(`${DB_URL}/rsvps.json`,{method:"POST",body:JSON.stringify(data)}); id=(await res.json()).name; }
     await loadRsvps(); return id;
-  } catch (e) { console.error("Save failed:", e); }
+  } catch(e){ console.error("Save failed:",e); }
 }
-async function deleteRsvp(id) { try { await fetch(`${DB_URL}/rsvps/${id}.json`, { method: "DELETE" }); await loadRsvps(); } catch (e) { console.error(e); } }
-
-function getRsvpList() { return Object.entries(rsvps).map(([id, data]) => ({ id, ...data })); }
-function getTotals() {
-  const list = getRsvpList();
-  return { families: list.length, adults: list.reduce((s,r) => s + (r.adults||0), 0), teens: list.reduce((s,r) => s + (r.teens||0), 0), kids: list.reduce((s,r) => s + (r.kids||0), 0), total: list.reduce((s,r) => s + (r.adults||0) + (r.teens||0) + (r.kids||0), 0) };
+async function deleteRsvp(id){ try { await fetch(`${DB_URL}/rsvps/${id}.json`,{method:"DELETE"}); await loadRsvps(); } catch(e){ console.error(e); } }
+async function patchRsvp(id, partial){
+  try { await fetch(`${DB_URL}/rsvps/${id}.json`,{method:"PATCH",body:JSON.stringify(partial)}); await loadRsvps(); }
+  catch(e){ console.error(e); }
 }
-function esc(str) { const d = document.createElement("div"); d.textContent = str || ""; return d.innerHTML; }
-function resetForm() { form = { name: "", email: "", adults: 1, teens: 0, kids: 0, dishes: [], extras: [] }; }
 
-function render() {
-  const app = document.getElementById("app");
-  switch (currentView) {
-    case "home": app.innerHTML = renderHome(); break;
-    case "board": app.innerHTML = renderBoard(); break;
-    case "guests": app.innerHTML = renderGuests(); break;
-    case "rsvp": app.innerHTML = submitted ? renderSuccess() : renderRsvpForm(); break;
+// ───────────────── HELPERS ─────────────────
+function getRsvpList(){ return Object.entries(rsvps).map(([id,data])=>({id,...data})); }
+function getTotals(){
+  const list=getRsvpList(); let a=0,t=0,k=0;
+  list.forEach(r=>{ a+=(+r.adults||0); t+=(+r.teens||0); k+=(+r.kids||0); });
+  return { adults:a, teens:t, kids:k, total:a+t+k, families:list.length };
+}
+function getDishes(r){ return r.dishes && r.dishes.length ? r.dishes : []; }
+function dishCountByCat(catId){
+  let n=0; getRsvpList().forEach(r=>getDishes(r).forEach(d=>{ if(d.category===catId) n++; })); return n;
+}
+function esc(s){ return String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+
+function buildRsvpSummary(entry){
+  let parts=[`${entry.adults} adult${entry.adults!==1?'s':''}`];
+  if(entry.teens>0) parts.push(`${entry.teens} teen${entry.teens!==1?'s':''}`);
+  if(entry.kids>0) parts.push(`${entry.kids} kid${entry.kids!==1?'s':''}`);
+  let summary=parts.join(', ');
+  const dishes=getDishes(entry);
+  if(dishes.length){ summary+=' · Bringing: '+dishes.map(d=>d.item||FOOD_CATEGORIES.find(c=>c.id===d.category)?.label||d.category).join(', '); }
+  if(entry.carpool==="offer") summary+=` · Carpool: offering ${entry.seats} seat${entry.seats!==1?'s':''} (${townFromZip(entry.zip)||entry.zip||'area n/a'})`;
+  if(entry.carpool==="share") summary+=` · Carpool: open to sharing a ride (${townFromZip(entry.zip)||entry.zip||'area n/a'})`;
+  return summary;
+}
+
+async function sendConfirmationEmail(entry){
+  if(!entry.email) return;
+  try { await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+    to_email: entry.email, name: entry.name, rsvp_summary: buildRsvpSummary(entry), event_address: EVENT_ADDRESS
+  }); } catch(e){ console.error("Email send failed:",e); }
+}
+async function sendAdminNotification(entry){
+  try { await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_ADMIN_TEMPLATE_ID, {
+    name: entry.name, to_email: entry.email||"Not provided", rsvp_summary: buildRsvpSummary(entry)
+  }); } catch(e){ console.error("Admin notification failed:",e); }
+}
+// Carpool connect request → email host
+async function sendCarpoolConnect(requester, target){
+  try { await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_ADMIN_TEMPLATE_ID, {
+    name: `CARPOOL REQUEST — ${requester.name}`,
+    to_email: requester.phone || requester.email || "n/a",
+    rsvp_summary: `${requester.name} (${townFromZip(requester.zip)||requester.zip||'area n/a'}, ${requester.phone||'no phone'}) wants to connect with ${target.name} (${townFromZip(target.zip)||target.zip||'area n/a'}, ${target.phone||'no phone'}) for a ride. Please introduce them.`
+  }); } catch(e){ console.error("Carpool connect failed:",e); }
+}
+
+// ───────────────── CARPOOL GROUPING ─────────────────
+function getCarpoolGroups(){
+  const list=getRsvpList().filter(r=>r.carpool==="offer"||r.carpool==="share");
+  const groups={};
+  list.forEach(r=>{
+    const area = townFromZip(r.zip) || (r.zip ? `Zip ${r.zip}` : "Area not shared");
+    if(!groups[area]) groups[area]={ area, offering:[], sharing:[] };
+    if(r.carpool==="offer") groups[area].offering.push(r);
+    else groups[area].sharing.push(r);
+  });
+  return Object.values(groups).sort((a,b)=>a.area.localeCompare(b.area));
+}
+
+// ───────────────── SVG DECOR ─────────────────
+function burstSVG(size,color,delay,pos){
+  let lines="";
+  for(let i=0;i<10;i++){ const a=(i/10)*Math.PI*2;
+    lines+=`<line x1="${50+Math.cos(a)*14}" y1="${50+Math.sin(a)*14}" x2="${50+Math.cos(a)*42}" y2="${50+Math.sin(a)*42}" stroke="${color}" stroke-width="2.2" stroke-linecap="round" stroke-dasharray="40" style="animation:burstLoop 4.6s ease-out ${delay}s infinite"/>`;
   }
-  bindEvents();
+  return `<svg width="${size}" height="${size}" viewBox="0 0 100 100" style="position:absolute;pointer-events:none;${pos}">${lines}<circle cx="50" cy="50" r="2.5" fill="${color}" opacity="0.7" style="animation:twinkle 4.6s ease-in-out ${delay+0.3}s infinite"/></svg>`;
+}
+function starSVG(x,y,s,color,delay){
+  return `<svg width="${s*2}" height="${s*2}" viewBox="0 0 20 20" style="position:absolute;left:${x};top:${y}px;pointer-events:none;animation:twinkle 3.4s ease-in-out ${delay}s infinite"><path d="M10 1 L12.2 7.4 L19 7.6 L13.6 11.8 L15.5 18.4 L10 14.5 L4.5 18.4 L6.4 11.8 L1 7.6 L7.8 7.4 Z" fill="${color}"/></svg>`;
 }
 
-function renderTicker() {
-  const t = getTotals();
-  if (t.families === 0) return '';
-  return `<div class="ticker">
-    <span class="total" data-nav="guests">${t.total} attending</span>
-    <span class="sep">|</span><span>${t.adults} adults</span><span class="sep">·</span>
-    <span>${t.teens} teens</span><span class="sep">·</span><span>${t.kids} kids</span>
+// ───────────────── NAV + TICKER ─────────────────
+function navHTML(active){
+  const items=[["home","HOME"],["food","FOOD"],["guests","GUESTS"],["carpool","CARPOOL"]];
+  let btns=items.map(([v,l])=>`<button onclick="nav('${v}')" style="background:none;border:none;font-size:9.5px;font-weight:${active===v?800:600};color:${active===v?'var(--navy)':'var(--soft)'};letter-spacing:1.8px;text-transform:uppercase;padding:6px 1px;border-bottom:2px solid ${active===v?'var(--gold)':'transparent'}">${l}</button>`).join("");
+  return `<div style="position:sticky;top:0;z-index:50;background:rgba(250,246,238,0.92);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--line);display:flex;justify-content:center;gap:14px;padding:12px 10px;align-items:center">
+    ${btns}
+    <button onclick="nav('rsvp')" style="background:${active==='rsvp'?'var(--soft)':'var(--red)'};color:#fff;border:none;border-radius:4px;padding:9px 16px;font-size:9.5px;font-weight:800;letter-spacing:1.8px;${active==='rsvp'?'':'box-shadow:0 3px 12px rgba(178,34,52,0.3)'}">RSVP</button>
+  </div>`;
+}
+function tickerHTML(){
+  const t=getTotals();
+  return `<div style="display:flex;justify-content:center;gap:12px;padding:9px 14px;font-size:11px;font-weight:600;color:var(--soft);background:var(--paper);position:sticky;top:45px;z-index:40;border-bottom:1px solid var(--line);white-space:nowrap">
+    <span style="color:var(--red);font-weight:800;cursor:pointer" onclick="nav('guests')">${t.total} attending</span>
+    <span style="opacity:.35">|</span><span>${t.adults} adults</span><span style="opacity:.35">·</span><span>${t.teens} teens</span><span style="opacity:.35">·</span><span>${t.kids} kids</span>
   </div>`;
 }
 
-function renderNav(active) {
-  return `<div class="nav">
-    ${["home","board","guests"].map(v => `<button class="${active===v?'active':''}" data-nav="${v}">${v === 'board' ? 'food' : v}</button>`).join("")}
-    <button class="nav-rsvp ${active==='rsvp'?'nav-rsvp-active':''}" data-nav="rsvp">RSVP</button>
+// ───────────────── HOME ─────────────────
+function homeHTML(){
+  return `<div>
+    <div style="position:relative;max-width:640px;margin:0 auto;padding:44px 24px 8px;text-align:center;overflow:hidden">
+      ${burstSVG(88,'var(--gold)',0.4,'top:6px;left:4%')}
+      ${burstSVG(64,'var(--red)',1.8,'top:64px;left:16%')}
+      ${burstSVG(110,'var(--red)',1.0,'top:0;right:3%')}
+      ${burstSVG(62,'var(--navy)',2.6,'top:90px;right:13%')}
+      ${starSVG('9%',130,6,'var(--navy)',0.6)}${starSVG('88%',150,7,'var(--gold)',1.4)}
+      ${starSVG('79%',48,5,'var(--red)',2.2)}${starSVG('20%',28,5,'var(--red)',3.0)}
+      <div style="position:relative">
+        <p class="rise" style="animation-delay:.05s;font-family:'Kaushan Script',cursive;font-size:46px;color:var(--red);line-height:1;transform:rotate(-3.5deg);margin-bottom:-2px">4th of</p>
+        <h1 class="rise" style="animation-delay:.15s;font-family:'Playfair Display',serif;font-size:min(24vw,118px);font-weight:900;line-height:.82;letter-spacing:2px;color:var(--navy)">JULY</h1>
+        <p class="rise" style="animation-delay:.3s;font-family:'Great Vibes',cursive;font-size:64px;color:var(--gold);line-height:1;margin-top:8px;transform:rotate(-4deg);-webkit-text-stroke:1px var(--gold)">Cookout</p>
+        <svg class="rise" width="230" height="18" viewBox="0 0 230 18" style="animation-delay:.45s;display:block;margin:-2px auto 0;transform:rotate(-4deg)"><path d="M6 10 Q 75 3, 150 8 T 224 7" stroke="var(--gold)" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-dasharray="240" style="animation:flourishDraw 1.1s cubic-bezier(0.6,0,0.3,1) .55s both"/></svg>
+      </div>
+    </div>
+    <div class="rise" style="animation-delay:.55s;max-width:460px;margin:26px auto 0;padding:0 24px">
+      <div style="border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:13px 0;display:flex;justify-content:center;gap:10px;align-items:center;flex-wrap:wrap">
+        <span style="font-size:11px;font-weight:800;letter-spacing:3px;color:var(--navy)">FOOD</span>
+        <span style="width:4px;height:4px;border-radius:50%;background:var(--gold)"></span>
+        <span style="font-size:11px;font-weight:800;letter-spacing:3px;color:var(--red)">FELLOWSHIP</span>
+        <span style="width:4px;height:4px;border-radius:50%;background:var(--gold)"></span>
+        <span style="font-size:11px;font-weight:800;letter-spacing:3px;color:var(--navy)">FIREWORKS</span>
+      </div>
+    </div>
+    <div class="rise" style="animation-delay:.65s;max-width:500px;margin:22px auto 0;padding:0 24px;display:flex;justify-content:center;text-align:center">
+      <div style="flex:1;padding:2px 10px"><p style="font-size:9px;font-weight:800;letter-spacing:2.5px;color:var(--soft);margin-bottom:4px">SATURDAY</p><p style="font-size:15px;font-weight:800;color:var(--navy)">July 4, 2026</p></div>
+      <div style="flex:1;padding:2px 10px;border-left:1px solid var(--line)"><p style="font-size:9px;font-weight:800;letter-spacing:2.5px;color:var(--soft);margin-bottom:4px">STARTING AT</p><p style="font-size:15px;font-weight:800;color:var(--navy)">5:00 PM</p></div>
+      <div style="flex:1;padding:2px 10px;border-left:1px solid var(--line)"><p style="font-size:9px;font-weight:800;letter-spacing:2.5px;color:var(--soft);margin-bottom:4px">AT DUSK</p><p style="font-size:15px;font-weight:800;color:var(--red)">Fireworks</p></div>
+    </div>
+    <p class="rise" style="animation-delay:.72s;text-align:center;font-size:12px;color:var(--soft);font-style:italic;margin-top:16px;padding:0 24px">Address to be shared via RSVP confirmation email</p>
+    <p class="rise" style="animation-delay:.76s;text-align:center;font-size:13px;color:var(--red);font-weight:700;margin-top:4px">Light fireworks at dusk</p>
+    <div class="rise" style="animation-delay:.82s;max-width:420px;margin:26px auto 0;padding:0 28px;text-align:center">
+      <p style="font-size:16px;color:var(--ink);line-height:1.65;font-weight:500;margin-bottom:10px">Join us for an evening of food, fellowship, and fireworks this Independence Day.</p>
+      <p style="font-family:'Kaushan Script',cursive;font-size:23px;color:var(--navy);line-height:1.3">Bring your family &amp; friends!</p>
+    </div>
+    <div class="rise" style="animation-delay:.9s;display:flex;gap:10px;max-width:410px;margin:28px auto 0;padding:0 24px 16px">
+      <button onclick="nav('guests')" style="flex:1;padding:15px 8px;border-radius:8px;border:1.5px solid rgba(30,42,86,0.19);background:transparent;font-size:10px;font-weight:800;color:var(--navy);letter-spacing:2px">GUEST LIST</button>
+      <button onclick="nav('rsvp')" style="flex:1.25;padding:15px 8px;border-radius:8px;border:none;background:var(--red);color:#fff;font-size:11px;font-weight:800;letter-spacing:2.5px;box-shadow:0 5px 18px rgba(178,34,52,0.22)">RSVP</button>
+      <button onclick="nav('food')" style="flex:1;padding:15px 8px;border-radius:8px;border:1.5px solid rgba(30,42,86,0.19);background:transparent;font-size:10px;font-weight:800;color:var(--navy);letter-spacing:2px">FOOD BOARD</button>
+    </div>
+    <div class="rise" style="animation-delay:1s;margin-top:26px;background:var(--red);padding:16px 24px;text-align:center">
+      <p style="font-family:'Kaushan Script',cursive;font-size:17px;color:var(--cream);line-height:1.45">Come enjoy great food, great fellowship, and a wonderful evening together!</p>
+    </div>
   </div>`;
 }
 
-function renderFoodBoard(compact) {
-  const list = getRsvpList();
-  const cls = compact ? "compact" : "";
-  return FOOD_CATEGORIES.map(cat => {
-    const catItems = [];
-    list.forEach(r => { getDishes(r).forEach(d => { if (d.category === cat.id) catItems.push({ ...d, name: r.name }); }); });
-    let itemsHtml = "";
-    if (catItems.length > 0) {
-      itemsHtml = `<div class="food-items">${catItems.map(item =>
-        `<div class="food-item"><span class="food-item-name">${esc(item.item || cat.label)}</span><span class="food-item-who">${item.servingSize ? esc(item.servingSize) : ''}</span></div>`
-      ).join("")}</div>`;
+// ───────────────── FOOD ─────────────────
+function foodHTML(){
+  const cards=FOOD_CATEGORIES.map((cat,i)=>{
+    const dishes=[]; getRsvpList().forEach(r=>getDishes(r).forEach(d=>{ if(d.category===cat.id) dishes.push(d); }));
+    const cnt=dishes.length;
+    let inner=`<div style="padding:13px 16px;display:flex;justify-content:space-between;align-items:center;gap:10px">
+      <div style="min-width:0"><div style="font-weight:800;font-size:14px;color:var(--navy);letter-spacing:.2px">${esc(cat.label)}</div><div style="font-size:11px;color:var(--soft);margin-top:3px">${esc(cat.examples)}</div></div>
+      <span style="padding:4px 12px;border-radius:20px;font-size:11px;font-weight:800;flex-shrink:0;background:${cnt>0?'rgba(178,34,52,0.055)':'var(--cream)'};color:${cnt>0?'var(--red)':'var(--soft)'};border:1px solid ${cnt>0?'rgba(178,34,52,0.13)':'var(--line)'}">${cnt>0?cnt:'Open'}</span></div>`;
+    if(dishes.length){
+      inner+=`<div style="border-top:1px dashed var(--line);padding:4px 16px 8px;background:var(--cream)">`+
+        dishes.map((d,j)=>`<div style="display:flex;justify-content:space-between;padding:7px 0;font-size:13px;${j<dishes.length-1?'border-bottom:1px dashed var(--line)':''}"><span style="color:var(--ink);font-weight:600">${esc(d.item||cat.label)}</span><span style="color:var(--soft);font-size:12px">${esc(d.servingSize||'')}</span></div>`).join("")+
+        `</div>`;
     }
-    return `<div class="food-card ${cls}">
-      <div class="food-header">
-        <div class="food-info"><span class="food-emoji">${cat.emoji}</span><span class="food-label">${cat.label}</span></div>
-        <span class="food-badge ${catItems.length > 0 ? 'filled' : 'open'}">${catItems.length > 0 ? catItems.length : 'Open'}</span>
-      </div>${itemsHtml}</div>`;
+    return `<div class="rise" style="animation-delay:${(0.05+0.03*i).toFixed(2)}s;background:var(--paper);border-radius:10px;border:1px solid var(--line);overflow:hidden">${inner}</div>`;
   }).join("");
+  return `<div style="max-width:560px;margin:0 auto;padding:26px 20px 60px">
+    <h2 class="rise" style="font-family:'Playfair Display',serif;font-size:34px;font-weight:900;color:var(--navy);text-align:center;margin-bottom:4px">Food Board</h2>
+    <p class="rise" style="animation-delay:.05s;font-family:'Great Vibes',cursive;font-size:26px;color:var(--gold);text-align:center;margin-bottom:20px">what's cooking</p>
+    <div style="display:flex;flex-direction:column;gap:7px">${cards}</div>
+    <button onclick="nav('rsvp')" style="width:100%;padding:17px;border-radius:8px;border:none;background:var(--red);color:#fff;font-size:13px;font-weight:800;letter-spacing:2px;margin-top:24px;box-shadow:0 5px 18px rgba(178,34,52,0.19)">RSVP</button>
+  </div>`;
 }
 
-function renderExtrasBoard() {
-  const list = getRsvpList();
-  const rows = EXTRAS.map(ex => {
-    const people = list.filter(r => r.extras && r.extras.includes(ex.id));
-    return `<div class="extra-row ${people.length > 0 ? 'filled' : 'empty'}">
-      <div class="extra-info"><span>${ex.emoji}</span> ${ex.label}</div>
-      ${people.length > 0 ? `<div class="extra-who">${people.map(p => esc(p.name)).join(", ")}</div>` : `<span class="extra-open">Open</span>`}
-    </div>`;
-  }).join("");
-  return `<div class="extras-card"><div class="card-title">🎯 Community Extras</div>${list.some(r => r.extras?.length > 0) ? rows : '<p style="font-size:13px;color:#86868B">No extras signed up yet.</p>'}</div>`;
-}
-
-function renderHome() {
-  const t = getTotals();
-  return `
-    ${renderNav("home")}
-    ${renderTicker()}
-    <div class="body-home">
-      <div style="margin-bottom:6px"><span style="font-size:48px">🔥</span></div>
-      <p style="font-size:11px;font-weight:700;letter-spacing:5px;text-transform:uppercase;color:#B8420F;margin-bottom:12px">Memorial Day Weekend</p>
-      <h1 style="font-size:48px;font-weight:800;line-height:1;color:#1D1D1F;letter-spacing:-2px;margin-bottom:16px">Cookout.</h1>
-      <p style="font-size:19px;color:#1D1D1F;font-weight:600;line-height:1.5;margin-bottom:4px">Saturday, May 23rd · 4–8 PM</p>
-      <p style="font-size:14px;color:#B8420F;font-weight:500;margin-bottom:6px">Rain or shine — cookout will move indoors as needed</p>
-      <p style="margin-bottom:4px"><a href="https://www.google.com/maps/search/?api=1&query=21+Ridge+Road+Whitehouse+Station+NJ+08889" target="_blank" style="font-size:15px;color:#0066CC;font-weight:600;text-decoration:none">21 Ridge Road, Whitehouse Station, NJ 08889</a></p>
-      <p style="font-size:13px;color:#86868B;margin-bottom:20px">(Black House w/White & Brown Accents)</p>
-      <div style="max-width:420px;margin:0 auto 28px">
-        <p style="font-size:16px;color:#424245;line-height:1.6;margin-bottom:14px">Join us for fellowship, food, music, and fun this Memorial Day weekend.</p>
-        <p style="font-size:17px;color:#1D1D1F;font-weight:700;line-height:1.4;margin-bottom:14px"><strong>Come as you are — solo, with friends, with the family!</strong></p>
-        <p style="font-size:15px;color:#6E6E73;line-height:1.5;margin-bottom:6px">We invite you to bring your favorite dish or delicacy to share.</p>
-        <p style="font-size:14px;color:#6E6E73;line-height:1.5;margin-bottom:12px">Check the food board to see what's covered and where there's room.</p>
-      </div>
-      <div style="display:flex;gap:8px;max-width:400px;margin:0 auto">
-        <button class="btn-ghost" data-nav="guests" style="flex:1;font-size:12px;padding:14px 8px;letter-spacing:0.5px">GUEST LIST</button>
-        <button data-nav="rsvp" style="flex:1;padding:14px 8px;border-radius:14px;border:none;background:#1D1D1F;color:#fff;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;letter-spacing:0.5px">RSVP</button>
-        <button class="btn-ghost" data-nav="board" style="flex:1;font-size:12px;padding:14px 8px;letter-spacing:0.5px">FOOD BOARD</button>
-      </div>
-      ${getRsvpList().some(r => r.extras?.length > 0) ? `<div style="max-width:420px;margin:24px auto 0">${renderExtrasBoard()}</div>` : ''}
-    </div>`;
-}
-
-function renderBoard() {
-  return `${renderNav("board")}${renderTicker()}
-    <div class="body" style="padding-top:20px">
-      <h2 style="font-size:28px;font-weight:800;color:#1D1D1F;letter-spacing:-1px;margin-bottom:16px;text-align:center">Food Board</h2>
-      ${renderFoodBoard(false)}
-      <div style="margin-top:12px">${renderExtrasBoard()}</div>
-      <button class="btn-primary" style="margin-top:20px" data-nav="rsvp">RSVP & Claim a Dish</button>
-    </div>`;
-}
-
-function renderGuests() {
-  const list = getRsvpList().sort((a, b) => (a.name || '').localeCompare(b.name || '')); const t = getTotals();
-  let content;
-  if (list.length === 0) {
-    content = `<div style="text-align:center;padding:60px 20px;color:#86868B"><div style="font-size:48px;margin-bottom:16px">👥</div><p style="font-size:16px;font-weight:600">No RSVPs yet</p><button class="btn-link" style="margin-top:12px" data-nav="rsvp">Be the first →</button></div>`;
+// ───────────────── GUESTS ─────────────────
+function guestsHTML(){
+  const list=getRsvpList().sort((a,b)=>(a.name||"").localeCompare(b.name||""));
+  let rows;
+  if(list.length===0){
+    rows=`<div style="padding:40px 18px;text-align:center;color:var(--soft);font-size:14px">No RSVPs yet — be the first!</div>`;
   } else {
-    const adminBar = `<div class="admin-bar">${adminUnlocked ? `<button class="admin-btn unlocked" id="adminToggle">🔓 Admin · Lock</button>` : `<button class="admin-btn" id="adminToggle">🔒</button>`}</div>`;
-    const guestRows = list.map(r => {
-      let badges = '';
-      const actions = adminUnlocked ? `<div class="guest-actions"><button data-edit="${r.id}">✏️</button><button data-delete="${r.id}">✕</button></div>` : '';
-      return `<div class="guest-row"><div><div class="guest-name">${esc(r.name)}</div><div class="guest-detail">${r.adults} adult${r.adults!==1?'s':''}${(r.teens||0)>0?' · '+r.teens+' teen'+(r.teens!==1?'s':''):''}${r.kids>0?' · '+r.kids+' kid'+(r.kids!==1?'s':''):''}</div></div>${actions}</div>`;
+    rows=list.map((g,i)=>{
+      const sub=`${g.adults} adult${g.adults!==1?'s':''}`+(g.teens>0?` · ${g.teens} teen${g.teens!==1?'s':''}`:'')+(g.kids>0?` · ${g.kids} kid${g.kids!==1?'s':''}`:'');
+      const adminCtl=adminUnlocked?`<button onclick="startEdit('${g.id}')" style="background:none;border:none;color:var(--gold);font-size:11px;font-weight:700;margin-left:8px">Edit</button><button onclick="removeGuest('${g.id}')" style="background:none;border:none;color:var(--red);font-size:11px;font-weight:700">Delete</button>`:'';
+      return `<div style="padding:14px 18px;${i<list.length-1?'border-bottom:1px dashed var(--line)':''};display:flex;justify-content:space-between;align-items:baseline;gap:12px">
+        <div style="font-size:14px;font-weight:700;color:var(--ink)">${esc(g.name)}</div>
+        <div style="font-size:12px;color:var(--soft);font-weight:600;flex-shrink:0;text-align:right">${sub}${adminCtl}</div></div>`;
     }).join("");
-    content = `
-      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px">
-        <div>
-          <h2 style="font-size:28px;font-weight:800;color:#1D1D1F;letter-spacing:-1px;margin-bottom:2px">Guests</h2>
-          <p style="font-size:14px;color:#86868B">${t.families} ${t.families===1?'RSVP':'RSVPs'}</p>
-        </div>
-        ${adminUnlocked ? `<button class="admin-btn unlocked" id="adminToggle">🔓 Lock</button>` : `<button class="admin-btn" id="adminToggle">🔒</button>`}
-      </div>
-      <div class="card" style="padding:4px 20px">${guestRows}</div>
-      ${adminUnlocked ? `<div class="card" style="margin-top:12px">
-        <h3 class="card-title">📧 Email List</h3>
-        <p style="font-size:12px;color:#86868B;margin-bottom:10px">Tap to copy all emails for BCC</p>
-        <div id="emailList" style="font-size:13px;color:#424245;line-height:1.8;word-break:break-all;background:#F5F5F7;border-radius:10px;padding:12px;cursor:pointer;border:1px solid rgba(0,0,0,0.06)" onclick="navigator.clipboard.writeText(this.innerText).then(()=>{document.getElementById('copyMsg').style.display='block';setTimeout(()=>{document.getElementById('copyMsg').style.display='none'},2000)})">${list.filter(r => r.email).map(r => r.email).join(', ')}</div>
-        <p id="copyMsg" style="display:none;font-size:13px;color:#34A853;font-weight:600;margin-top:8px">Copied!</p>
-      </div>` : ''}
-      ${renderExtrasBoard()}`;
   }
-  return `${renderNav("guests")}${renderTicker()}<div class="body" style="padding-top:20px">${content}</div><div id="pinModal" style="display:none"></div>`;
+  let adminPanel;
+  if(adminUnlocked){
+    const emails=list.map(g=>g.email).filter(Boolean).join(", ");
+    adminPanel=`<div style="margin-top:16px;background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:16px">
+      <p style="font-size:11px;font-weight:800;letter-spacing:1.5px;color:var(--soft);text-transform:uppercase;margin-bottom:10px">Admin · Email List (tap to copy)</p>
+      <div onclick="copyEmails(this)" data-emails="${esc(emails)}" style="font-size:12px;color:var(--ink);background:var(--cream);border:1px solid var(--line);border-radius:8px;padding:12px;word-break:break-all;cursor:pointer">${emails?esc(emails):'No emails yet'}</div>
+      <button onclick="lockAdmin()" style="margin-top:10px;background:none;border:none;color:var(--soft);font-size:11px;font-weight:700;text-decoration:underline">Lock admin</button>
+    </div>`;
+  } else {
+    adminPanel=`<div style="margin-top:20px;text-align:center"><button onclick="promptPin()" style="background:none;border:none;color:var(--soft);font-size:11px;font-weight:600;opacity:.5">·</button></div>`;
+  }
+  return `<div style="max-width:560px;margin:0 auto;padding:26px 20px 60px">
+    <h2 class="rise" style="font-family:'Playfair Display',serif;font-size:34px;font-weight:900;color:var(--navy);text-align:center;margin-bottom:4px">Guest List</h2>
+    <p class="rise" style="animation-delay:.05s;font-family:'Great Vibes',cursive;font-size:26px;color:var(--gold);text-align:center;margin-bottom:20px">${list.length} ${list.length===1?'family':'families'} &amp; counting</p>
+    <div class="rise" style="animation-delay:.1s;background:var(--paper);border-radius:12px;border:1px solid var(--line);overflow:hidden">${rows}</div>
+    ${adminPanel}
+  </div>`;
 }
 
-function renderRsvpForm() {
-  const list = getRsvpList().filter(r => r.id !== editingId);
-  const catButtons = FOOD_CATEGORIES.map(cat => {
-    const isSelected = form.dishes.some(d => d.category === cat.id);
-    let ct = 0; list.forEach(r => { getDishes(r).forEach(d => { if (d.category === cat.id) ct++; }); });
-    return `<button class="cat-btn ${isSelected ? 'active' : ''}" data-cat-toggle="${cat.id}"><span class="emoji">${cat.emoji}</span> ${cat.label}${ct > 0 ? `<div class="count">${ct} signed up</div>` : ''}</button>`;
+// ───────────────── CARPOOL ─────────────────
+function carpoolHTML(){
+  const groups=getCarpoolGroups();
+  let body;
+  if(groups.length===0){
+    body=`<div style="background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:40px 18px;text-align:center;color:var(--soft);font-size:14px;line-height:1.6">No one has opted into carpooling yet.<br>Add it when you RSVP and you'll show up here, grouped by area.</div>`;
+  } else {
+    body=groups.map((group,gi)=>{
+      const offerSeats=group.offering.reduce((s,o)=>s+(+o.seats||0),0);
+      let summary=[];
+      if(offerSeats>0) summary.push(`<span style="color:var(--green)">${offerSeats} seat${offerSeats!==1?'s':''} offered</span>`);
+      if(group.sharing.length>0) summary.push(`<span style="color:var(--navy)">${group.sharing.length} open to share</span>`);
+      let sections="";
+      if(group.offering.length){
+        sections+=`<div style="padding:10px 16px"><p style="font-size:10px;font-weight:800;letter-spacing:1.5px;color:var(--green);text-transform:uppercase;margin-bottom:8px">Offering Seats</p>`+
+          group.offering.map(o=>{
+            const full=o.carpoolFull;
+            return `<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;${full?'opacity:.5':''}">
+              <div><span style="font-size:14px;font-weight:700;color:var(--ink);${full?'text-decoration:line-through':''}">${esc(o.name)}</span><span style="font-size:12px;color:var(--soft);margin-left:8px">${o.seats} seat${o.seats!==1?'s':''}</span>${full?'<span style="font-size:11px;color:var(--red);font-weight:700;margin-left:6px">FULL</span>':''}</div>
+              ${full?'':`<button onclick="askConnect('${o.id}')" style="padding:7px 16px;border-radius:6px;border:none;background:var(--green);color:#fff;font-size:11px;font-weight:800;letter-spacing:1px;flex-shrink:0">Ask to Connect</button>`}
+              ${adminUnlocked?`<button onclick="toggleFull('${o.id}',${full?'false':'true'})" style="margin-left:6px;background:none;border:1px solid var(--line);border-radius:6px;padding:6px 10px;font-size:10px;font-weight:700;color:var(--soft);flex-shrink:0">${full?'Reopen':'Mark full'}</button>`:''}
+            </div>`;
+          }).join("")+`</div>`;
+      }
+      if(group.sharing.length){
+        sections+=`<div style="padding:10px 16px;${group.offering.length?'border-top:1px dashed var(--line)':''}"><p style="font-size:10px;font-weight:800;letter-spacing:1.5px;color:var(--navy);text-transform:uppercase;margin-bottom:8px">Open to Sharing</p>`+
+          group.sharing.map(n=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0"><span style="font-size:14px;font-weight:700;color:var(--ink)">${esc(n.name)}</span><button onclick="askConnect('${n.id}')" style="padding:7px 16px;border-radius:6px;border:none;background:var(--navy);color:#fff;font-size:11px;font-weight:800;letter-spacing:1px;flex-shrink:0">Ask to Connect</button></div>`).join("")+`</div>`;
+      }
+      return `<div class="rise" style="animation-delay:${(0.1+gi*0.05).toFixed(2)}s;background:var(--paper);border-radius:12px;border:1px solid var(--line);overflow:hidden">
+        <div style="padding:12px 16px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;background:var(--cream)">
+          <div style="font-weight:800;font-size:15px;color:var(--navy)">${esc(group.area)}</div>
+          <div style="font-size:11px;color:var(--soft);font-weight:600">${summary.join(' · ')}</div>
+        </div>${sections}</div>`;
+    }).join("");
+  }
+  return `<div style="max-width:560px;margin:0 auto;padding:26px 20px 60px">
+    <h2 class="rise" style="font-family:'Playfair Display',serif;font-size:34px;font-weight:900;color:var(--navy);text-align:center;margin-bottom:4px">Carpool</h2>
+    <p class="rise" style="animation-delay:.05s;font-family:'Great Vibes',cursive;font-size:26px;color:var(--gold);text-align:center;margin-bottom:10px">let's ride together</p>
+    <p class="rise" style="animation-delay:.08s;font-size:12px;color:var(--soft);text-align:center;margin:0 auto 24px;line-height:1.5;max-width:380px">Grouped by area. Find someone nearby and tap "Ask to Connect" — Brother Kingsley will introduce you both. Contact info is never shown publicly.</p>
+    <div style="display:flex;flex-direction:column;gap:16px">${body}</div>
+    <button onclick="nav('rsvp')" style="width:100%;padding:17px;border-radius:8px;border:none;background:var(--red);color:#fff;font-size:13px;font-weight:800;letter-spacing:2px;margin-top:24px;box-shadow:0 5px 18px rgba(178,34,52,0.19)">RSVP &amp; Join Carpool</button>
+    <p style="font-size:11px;color:var(--soft);text-align:center;margin-top:14px;font-style:italic;line-height:1.5">Tap "Ask to Connect" and Brother Kingsley will introduce you both so you can arrange a ride. No contact info is shared publicly.</p>
+  </div>`;
+}
+
+// ───────────────── RSVP ─────────────────
+function rsvpHTML(){
+  if(submitted) return rsvpSuccessHTML();
+  const counter=(label,field)=>`<label style="display:block;font-size:10px;font-weight:800;color:var(--soft);margin-bottom:6px;margin-top:16px;letter-spacing:1.5px;text-transform:uppercase">${label}</label>
+    <div style="display:flex;align-items:center;gap:16px"><button onclick="adjust('${field}',-1)" style="width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:var(--cream);font-size:16px;font-weight:700;color:var(--navy)">−</button><span style="font-size:20px;font-weight:800;color:var(--ink);min-width:24px;text-align:center">${form[field]}</span><button onclick="adjust('${field}',1)" style="width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:var(--cream);font-size:16px;font-weight:700;color:var(--navy)">+</button></div>`;
+
+  // dish category buttons
+  const dishBtns=FOOD_CATEGORIES.map(cat=>{
+    const sel=form.dishes.find(d=>d.category===cat.id);
+    const cnt=dishCountByCat(cat.id);
+    return `<button onclick="toggleDish('${cat.id}')" style="padding:13px 12px;border-radius:8px;border:${sel?'2px solid var(--red)':'1px solid var(--line)'};background:${sel?'rgba(178,34,52,0.03)':'var(--paper)'};color:${sel?'var(--red)':'var(--ink)'};font-size:12px;font-weight:${sel?800:600};text-align:left">${esc(cat.label)}${cnt>0?`<div style="font-size:10px;color:var(--soft);margin-top:3px;font-weight:600">${cnt} signed up</div>`:''}</button>`;
+  }).join("");
+  // dish detail inputs for selected
+  const dishDetails=form.dishes.map(d=>{
+    const cat=FOOD_CATEGORIES.find(c=>c.id===d.category);
+    const opts=['Select...'].concat(SERVING_SIZES).map(s=>`<option ${d.servingSize===s?'selected':''}>${s}</option>`).join("");
+    return `<div style="margin-top:12px;padding:16px;background:rgba(178,34,52,0.035);border:1px solid rgba(178,34,52,0.11);border-radius:8px">
+      <div style="font-size:13px;font-weight:800;color:var(--red);margin-bottom:8px;letter-spacing:.5px;text-transform:uppercase">${esc(cat.label)}</div>
+      <label style="display:block;font-size:10px;font-weight:800;color:var(--soft);margin-bottom:6px;letter-spacing:1.5px;text-transform:uppercase">What are you bringing?</label>
+      <input value="${esc(d.item||'')}" oninput="setDishItem('${d.category}',this.value)" placeholder="e.g. Jollof, mac & cheese, pasta salad..." style="width:100%;padding:13px 15px;border-radius:8px;border:1px solid var(--line);background:var(--cream);font-size:14px;color:var(--ink);outline:none">
+      <label style="display:block;font-size:10px;font-weight:800;color:var(--soft);margin:16px 0 6px;letter-spacing:1.5px;text-transform:uppercase">Serving Size</label>
+      <select onchange="setDishSize('${d.category}',this.value)" style="width:100%;padding:13px 15px;border-radius:8px;border:1px solid var(--line);background:var(--cream);font-size:14px;color:var(--ink);outline:none;appearance:none">${opts}</select>
+    </div>`;
   }).join("");
 
-  const dishFields = form.dishes.map((dish, idx) => {
-    const cat = FOOD_CATEGORIES.find(c => c.id === dish.category);
-    if (!cat) return '';
-    const existingItems = [];
-    list.forEach(r => { getDishes(r).forEach(d => { if (d.category === cat.id) existingItems.push({ item: d.item, name: r.name }); }); });
-    const existingHtml = existingItems.length > 0 ? `<div class="existing-box"><div class="etitle">Already in ${cat.label}</div>${existingItems.map(e => `<div class="eitem">${esc(e.item || cat.label)} — <span>${esc(e.name)}</span></div>`).join("")}</div>` : '';
-    return `<div class="dish-field"><div class="dish-field-title">${cat.emoji} ${cat.label}</div>${existingHtml}
-      <label class="label" style="margin-top:0">What are you bringing?</label>
-      <input class="input dish-item" data-dish-idx="${idx}" placeholder="e.g. ${cat.examples.replace(', etc.','').split(', ').slice(0,2).join(', ')}..." value="${esc(dish.item)}">
-      <label class="label">Serving Size</label>
-      <select class="select dish-size" data-dish-idx="${idx}">
-        <option value="">Select...</option>
-        <option value="Small (5–10)" ${dish.servingSize==='Small (5–10)'?'selected':''}>Small (5–10)</option>
-        <option value="Medium (10–20)" ${dish.servingSize==='Medium (10–20)'?'selected':''}>Medium (10–20)</option>
-        <option value="Large (20+)" ${dish.servingSize==='Large (20+)'?'selected':''}>Large (20+)</option>
-        <option value="Half Pan" ${dish.servingSize==='Half Pan'?'selected':''}>Half Pan</option>
-        <option value="Full Pan" ${dish.servingSize==='Full Pan'?'selected':''}>Full Pan</option>
-      </select></div>`;
-  }).join("");
-
-  const extraChips = EXTRAS.map(ex => `<button class="chip ${form.extras.includes(ex.id)?'active':''}" data-extra="${ex.id}">${ex.emoji} ${ex.label}</button>`).join("");
-
-  return `${renderNav("rsvp")}${renderTicker()}
-    <div class="body" style="padding-top:20px">
-      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:16px">
-        <h2 style="font-size:28px;font-weight:800;color:#1D1D1F;letter-spacing:-1px">${editingId ? 'Update RSVP' : 'RSVP'}</h2>
-        ${!editingId ? `<button id="toggleLookup" style="background:none;border:none;font-size:12px;color:#0066CC;font-family:inherit;cursor:pointer;font-weight:500">Update RSVP</button>` : ''}
-      </div>
-
-      ${showLookup && !editingId ? `<div class="lookup-card" style="margin-bottom:12px">
-        <div style="display:flex;gap:8px"><input class="input" id="lookupEmail" type="email" placeholder="Enter your email to find your RSVP" value="${esc(lookupEmail)}" style="flex:1"><button class="btn-ghost" id="lookupBtn" style="width:auto;padding:12px 16px;white-space:nowrap">Look Up</button></div>
-        ${lookupError ? `<p style="font-size:13px;color:#FF3B30;margin:8px 0 0">${lookupError}</p>` : ''}
-      </div>` : ''}
-
-      <div class="card">
-        <h3 class="card-title">Who's Coming?</h3>
-        <label class="label">Name / Family Name</label>
-        <input class="input" id="rsvpName" placeholder="e.g. The Okafor Family" value="${esc(form.name)}">
-        <label class="label">Email</label>
-        <input class="input" id="rsvpEmail" type="email" placeholder="e.g. name@email.com" value="${esc(form.email)}">
-        <label class="label">Adults</label>
-        <div class="num-row"><button class="num-btn" data-num="adults" data-dir="-1">−</button><span class="num-val">${form.adults}</span><button class="num-btn" data-num="adults" data-dir="1">+</button></div>
-        <label class="label">Teens (13–17)</label>
-        <div class="num-row"><button class="num-btn" data-num="teens" data-dir="-1">−</button><span class="num-val">${form.teens}</span><button class="num-btn" data-num="teens" data-dir="1">+</button></div>
-        <label class="label">Children (12 & under)</label>
-        <div class="num-row"><button class="num-btn" data-num="kids" data-dir="-1">−</button><span class="num-val">${form.kids}</span><button class="num-btn" data-num="kids" data-dir="1">+</button></div>
-      </div>
-
-      <div class="card">
-        <h3 class="card-title">Bringing a Dish?</h3>
-        <p style="font-size:14px;color:#86868B;margin-bottom:8px;line-height:1.5">We invite you to bring your favorite dish or delicacy. Tap one or more categories.</p>
-        <p style="margin-bottom:16px"><a href="#foodboard-preview" style="font-size:13px;color:#0066CC;font-weight:500;text-decoration:none">See what's already being brought ↓</a></p>
-        <div class="cat-grid">${catButtons}</div>
-        ${dishFields}
-      </div>
-
-      <div class="card">
-        <h3 class="card-title">Bringing Any Extras?</h3>
-        <p style="font-size:13px;color:#86868B;margin:0 0 12px;line-height:1.5">Optional — but always appreciated!</p>
-        <div class="chip-row">${extraChips}</div>
-      </div>
-
-      <button class="btn-primary" id="submitBtn" ${!form.name.trim()||!form.email.trim()?'disabled':''}>${editingId?'Update RSVP':'Submit RSVP'}</button>
-
-      <div style="margin-top:32px">
-        <p id="foodboard-preview" style="font-size:14px;font-weight:600;color:#86868B;margin-bottom:12px">📋 Current Food Board</p>
-        ${renderFoodBoard(true)}
-      </div>
+  // carpool
+  const cpBtn=(m,title,sub,color)=>`<button onclick="setCarpool('${m}')" style="width:100%;text-align:left;padding:14px 16px;border-radius:10px;border:${form.carpool===m?`2px solid ${color}`:'1px solid var(--line)'};background:${form.carpool===m?color+'14':'var(--paper)'};color:${form.carpool===m?color:'var(--ink)'}"><div style="font-weight:800;font-size:14px">${title}</div>${sub?`<div style="font-size:12px;opacity:.8;margin-top:2px">${sub}</div>`:''}</button>`;
+  let cpDetail="";
+  if(form.carpool==="offer"){
+    cpDetail=`<div style="background:rgba(45,106,79,0.05);border:1px solid rgba(45,106,79,0.18);border-radius:10px;padding:16px">
+      <label style="display:block;font-size:10px;font-weight:800;color:var(--soft);margin-bottom:6px;letter-spacing:1.5px;text-transform:uppercase">Seats you can offer</label>
+      <div style="display:flex;align-items:center;gap:16px;margin-bottom:14px"><button onclick="adjust('seats',-1)" style="width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:var(--cream);font-size:16px;font-weight:700;color:var(--navy)">−</button><span style="font-size:22px;font-weight:800;color:var(--ink);min-width:28px;text-align:center">${form.seats}</span><button onclick="adjust('seats',1)" style="width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:var(--cream);font-size:16px;font-weight:700;color:var(--navy)">+</button></div>
+      ${zipPhoneInputs()}
+      <p style="font-size:11px;color:var(--soft);margin-top:8px;line-height:1.4">Your zip is only used to group you by area. Your number is never shown publicly — it's shared only when Brother Kingsley connects you with someone for a ride.</p>
     </div>`;
-}
-
-function renderSuccess() {
-  return `${renderNav("rsvp")}${renderTicker()}
-    <div class="body">
-      <div class="success-card">
-        <div style="font-size:48px;margin-bottom:12px">🎉</div>
-        <h2>You're all set!</h2>
-        <p>Your RSVP has been recorded. We look forward to seeing you!</p>
-      </div>
-      <div class="flex-row"><button class="btn-ghost" data-nav="board">Food Board</button><button class="btn-ghost" data-nav="guests">Guest List</button></div>
-      <div class="spacer"></div>
-      <button class="btn-ghost" id="anotherRsvp">Submit Another RSVP</button>
+  } else if(form.carpool==="share"){
+    cpDetail=`<div style="background:rgba(30,42,86,0.04);border:1px solid rgba(30,42,86,0.13);border-radius:10px;padding:16px">
+      ${zipPhoneInputs()}
+      <p style="font-size:11px;color:var(--soft);margin-top:8px;line-height:1.4">Your zip is only used to group you with people nearby. Your number is never shown publicly — it's shared only when Brother Kingsley connects you with someone for a ride.</p>
+      <div style="margin-top:14px;padding:12px 14px;background:rgba(196,153,59,0.07);border:1px solid rgba(196,153,59,0.25);border-radius:8px"><p style="font-size:12px;color:var(--ink);font-weight:600;line-height:1.5">Next step: after you submit, head to the <button onclick="nav('carpool')" style="background:none;border:none;padding:0;color:var(--red);font-weight:800;text-decoration:underline;font-size:12px">Carpool</button> tab, find someone offering seats in your area, and tap "Ask to Connect."</p></div>
     </div>`;
+  }
+
+  const lookupBlock=showLookup?`<div style="background:var(--paper);border-radius:12px;padding:20px;margin-bottom:12px;border:1px solid var(--line)">
+    <h3 style="font-family:'Playfair Display',serif;font-size:17px;font-weight:900;color:var(--navy);margin-bottom:10px">Update Your RSVP</h3>
+    <p style="font-size:12px;color:var(--soft);margin-bottom:10px">Enter the email you used and we'll load your RSVP to edit.</p>
+    <input id="lookupEmail" value="${esc(lookupEmail)}" placeholder="your@email.com" style="width:100%;padding:13px 15px;border-radius:8px;border:1px solid var(--line);background:var(--cream);font-size:14px;color:var(--ink);outline:none;box-sizing:border-box">
+    ${lookupError?`<p style="font-size:12px;color:var(--red);margin-top:8px">${esc(lookupError)}</p>`:''}
+    <button onclick="doLookup()" style="width:100%;margin-top:12px;padding:13px;border-radius:8px;border:none;background:var(--navy);color:#fff;font-size:12px;font-weight:800;letter-spacing:1px">Find My RSVP</button>
+  </div>`:'';
+
+  return `<div style="max-width:560px;margin:0 auto;padding:26px 20px 60px">
+    <div class="rise" style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:18px">
+      <h2 style="font-family:'Playfair Display',serif;font-size:34px;font-weight:900;color:var(--navy)">${editingId?'Edit RSVP':'RSVP'}</h2>
+      <button onclick="toggleLookup()" style="background:none;border:none;font-size:12px;color:var(--gold);font-weight:700;text-decoration:underline;text-underline-offset:3px">${showLookup?'Cancel':'Update RSVP'}</button>
+    </div>
+    ${lookupBlock}
+    <div class="rise" style="animation-delay:.05s;background:var(--paper);border-radius:12px;padding:20px;margin-bottom:12px;border:1px solid var(--line)">
+      <h3 style="font-family:'Playfair Display',serif;font-size:19px;font-weight:900;color:var(--navy);margin-bottom:14px">Who's Coming?</h3>
+      <label style="display:block;font-size:10px;font-weight:800;color:var(--soft);margin-bottom:6px;letter-spacing:1.5px;text-transform:uppercase">Name / Family Name</label>
+      <input value="${esc(form.name)}" oninput="setField('name',this.value)" placeholder="e.g. The Okafor Family" style="width:100%;padding:13px 15px;border-radius:8px;border:1px solid var(--line);background:var(--cream);font-size:14px;color:var(--ink);outline:none;box-sizing:border-box">
+      <label style="display:block;font-size:10px;font-weight:800;color:var(--soft);margin:16px 0 6px;letter-spacing:1.5px;text-transform:uppercase">Email</label>
+      <input value="${esc(form.email)}" oninput="setField('email',this.value)" type="email" placeholder="e.g. name@email.com" style="width:100%;padding:13px 15px;border-radius:8px;border:1px solid var(--line);background:var(--cream);font-size:14px;color:var(--ink);outline:none;box-sizing:border-box">
+      ${counter('Adults','adults')}${counter('Teens (13–17)','teens')}${counter('Children','kids')}
+    </div>
+    <div class="rise" style="animation-delay:.1s;background:var(--paper);border-radius:12px;padding:20px;margin-bottom:12px;border:1px solid var(--line)">
+      <h3 style="font-family:'Playfair Display',serif;font-size:19px;font-weight:900;color:var(--navy);margin-bottom:14px">Bringing a Dish?</h3>
+      <p style="font-size:13px;color:var(--soft);margin-bottom:8px;line-height:1.5">We invite you to bring your favorite dish or delicacy. Tap one or more categories.</p>
+      <p style="margin-bottom:16px"><button onclick="nav('food')" style="background:none;border:none;font-size:12px;color:var(--gold);font-weight:700;text-decoration:underline;text-underline-offset:3px;padding:0">See what's already being brought</button></p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">${dishBtns}</div>
+      ${dishDetails}
+    </div>
+    <div class="rise" style="animation-delay:.15s;background:var(--paper);border-radius:12px;padding:20px;margin-bottom:12px;border:1px solid var(--line)">
+      <h3 style="font-family:'Playfair Display',serif;font-size:19px;font-weight:900;color:var(--navy);margin-bottom:14px">Open to Carpooling?</h3>
+      <p style="font-size:13px;color:var(--soft);margin-bottom:16px;line-height:1.5">Optional — if you're open to sharing a ride, we'll group you by area so neighbors can travel together.</p>
+      <div style="display:flex;flex-direction:column;gap:8px;${form.carpool&&form.carpool!=='none'?'margin-bottom:16px':''}">
+        ${cpBtn('offer','I can offer seats','Happy to pick up others on the way','var(--green)')}
+        ${cpBtn('share','I\'m open to sharing a ride','I\'d happily ride along with someone nearby','var(--navy)')}
+        ${cpBtn('none','No thanks — we\'re set','','var(--soft)')}
+      </div>
+      ${cpDetail}
+    </div>
+    <button onclick="submitForm()" style="width:100%;padding:17px;border-radius:8px;border:none;background:var(--red);color:#fff;font-size:13px;font-weight:800;letter-spacing:2px;box-shadow:0 5px 18px rgba(178,34,52,0.19)">${editingId?'Save Changes':'Submit RSVP'}</button>
+    <p style="font-size:11px;color:var(--soft);text-align:center;margin-top:10px;font-style:italic">Address will be shared in your confirmation email</p>
+  </div>`;
+}
+function zipPhoneInputs(){
+  return `<label style="display:block;font-size:10px;font-weight:800;color:var(--soft);margin-bottom:6px;letter-spacing:1.5px;text-transform:uppercase">Your Zip Code</label>
+    <input value="${esc(form.zip)}" oninput="setField('zip',this.value)" placeholder="e.g. 08822" maxlength="5" inputmode="numeric" style="width:100%;padding:13px 15px;border-radius:8px;border:1px solid var(--line);background:var(--cream);font-size:14px;color:var(--ink);outline:none;box-sizing:border-box">
+    <label style="display:block;font-size:10px;font-weight:800;color:var(--soft);margin:16px 0 6px;letter-spacing:1.5px;text-transform:uppercase">Contact Number</label>
+    <input value="${esc(form.phone)}" oninput="setField('phone',this.value)" placeholder="e.g. (908) 555-1234" inputmode="tel" style="width:100%;padding:13px 15px;border-radius:8px;border:1px solid var(--line);background:var(--cream);font-size:14px;color:var(--ink);outline:none;box-sizing:border-box">`;
+}
+function rsvpSuccessHTML(){
+  return `<div style="max-width:480px;margin:0 auto;padding:60px 24px;text-align:center">
+    <div class="rise" style="font-family:'Great Vibes',cursive;font-size:44px;color:var(--gold);margin-bottom:8px">Thank you!</div>
+    <p class="rise" style="animation-delay:.1s;font-family:'Playfair Display',serif;font-size:24px;font-weight:900;color:var(--navy);margin-bottom:16px">Your RSVP is in.</p>
+    <p class="rise" style="animation-delay:.15s;font-size:15px;color:var(--ink);line-height:1.6;margin-bottom:8px">We can't wait to celebrate with you on the 4th. Check your email for confirmation and the address.</p>
+    <p class="rise" style="animation-delay:.2s;font-size:13px;color:var(--soft);line-height:1.6;margin-bottom:28px">Didn't get an email? It may take a minute, or check your spam folder.</p>
+    <div class="rise" style="animation-delay:.25s;display:flex;gap:10px;justify-content:center">
+      <button onclick="nav('food')" style="padding:14px 20px;border-radius:8px;border:1.5px solid rgba(30,42,86,0.19);background:transparent;font-size:11px;font-weight:800;color:var(--navy);letter-spacing:1.5px">FOOD BOARD</button>
+      <button onclick="nav('carpool')" style="padding:14px 20px;border-radius:8px;border:none;background:var(--navy);color:#fff;font-size:11px;font-weight:800;letter-spacing:1.5px">CARPOOL</button>
+    </div>
+  </div>`;
 }
 
-// ─── Events ───
-function bindEvents() {
-  document.querySelectorAll("[data-nav]").forEach(btn => {
-    btn.addEventListener("click", () => {
-      const target = btn.getAttribute("data-nav");
-      if (target === "rsvp") { submitted = false; resetForm(); editingId = null; lookupEmail = ""; lookupError = ""; showLookup = false; }
-      currentView = target === "board" ? "board" : target;
-      expandedCat = null;
-      history.pushState({ view: currentView }, "", `#${currentView}`);
-      render(); window.scrollTo(0, 0);
-    });
-  });
-  document.querySelectorAll("[data-num]").forEach(btn => {
-    btn.addEventListener("click", () => {
-      const field = btn.getAttribute("data-num"); const dir = parseInt(btn.getAttribute("data-dir"));
-      form[field] = Math.max(field === "adults" ? 1 : 0, form[field] + dir); render();
-    });
-  });
-  const nameInput = document.getElementById("rsvpName");
-  if (nameInput) { nameInput.addEventListener("input", () => { form.name = nameInput.value; updateSubmitBtn(); }); nameInput.addEventListener("change", () => { form.name = nameInput.value; }); }
-  const emailInput = document.getElementById("rsvpEmail");
-  if (emailInput) { emailInput.addEventListener("input", () => { form.email = emailInput.value; updateSubmitBtn(); }); emailInput.addEventListener("change", () => { form.email = emailInput.value; }); }
-  const lookupInput = document.getElementById("lookupEmail");
-  if (lookupInput) { lookupInput.addEventListener("input", () => { lookupEmail = lookupInput.value; }); }
-  const toggleLookup = document.getElementById("toggleLookup");
-  if (toggleLookup) { toggleLookup.addEventListener("click", () => { showLookup = !showLookup; render(); }); }
-  const lookupBtn = document.getElementById("lookupBtn");
-  if (lookupBtn) {
-    lookupBtn.addEventListener("click", () => {
-      const email = lookupEmail.trim().toLowerCase();
-      if (!email) { lookupError = "Please enter your email."; render(); return; }
-      const match = Object.entries(rsvps).find(([id, r]) => (r.email || "").toLowerCase() === email);
-      if (match) {
-        const [id, r] = match; editingId = id;
-        form = { name: r.name, email: r.email || "", adults: r.adults, teens: r.teens || 0, kids: r.kids, dishes: getDishes(r), extras: r.extras || [] };
-        lookupError = ""; lookupEmail = ""; render(); window.scrollTo(0, 0);
-      } else { lookupError = "No RSVP found with that email. Submit a new one below."; render(); }
-    });
-  }
-  function updateSubmitBtn() { const btn = document.getElementById("submitBtn"); if (btn) btn.disabled = !form.name.trim() || !form.email.trim(); }
-  document.querySelectorAll("[data-cat-toggle]").forEach(btn => {
-    btn.addEventListener("click", () => {
-      const catId = btn.getAttribute("data-cat-toggle");
-      const exists = form.dishes.findIndex(d => d.category === catId);
-      if (exists >= 0) form.dishes = form.dishes.filter(d => d.category !== catId);
-      else form.dishes = [...form.dishes, { category: catId, item: "", servingSize: "" }];
-      render();
-    });
-  });
-  document.querySelectorAll(".dish-item").forEach(input => {
-    const idx = parseInt(input.getAttribute("data-dish-idx"));
-    input.addEventListener("input", () => { if (form.dishes[idx]) form.dishes[idx].item = input.value; });
-    input.addEventListener("change", () => { if (form.dishes[idx]) form.dishes[idx].item = input.value; });
-  });
-  document.querySelectorAll(".dish-size").forEach(select => {
-    const idx = parseInt(select.getAttribute("data-dish-idx"));
-    select.addEventListener("change", () => { if (form.dishes[idx]) form.dishes[idx].servingSize = select.value; });
-  });
-  document.querySelectorAll("[data-extra]").forEach(btn => {
-    btn.addEventListener("click", () => {
-      const id = btn.getAttribute("data-extra");
-      form.extras = form.extras.includes(id) ? form.extras.filter(e => e !== id) : [...form.extras, id];
-      render();
-    });
-  });
-  const submitBtn = document.getElementById("submitBtn");
-  if (submitBtn) {
-    submitBtn.addEventListener("click", async () => {
-      if (!form.name.trim() || !form.email.trim()) return;
-      const entry = { name: form.name.trim(), email: form.email.trim(), adults: Math.max(1, form.adults), teens: Math.max(0, form.teens), kids: Math.max(0, form.kids), dishes: form.dishes.filter(d => d.item.trim() || d.category), extras: form.extras, ts: new Date().toISOString() };
-      submitBtn.disabled = true; submitBtn.textContent = "Submitting...";
-      await saveRsvp(editingId, entry);
-      if (entry.email) sendConfirmationEmail(entry);
-      sendAdminNotification(entry);
-      submitted = true; editingId = null; resetForm(); render();
-    });
-  }
-  const anotherBtn = document.getElementById("anotherRsvp");
-  if (anotherBtn) { anotherBtn.addEventListener("click", () => { submitted = false; resetForm(); render(); }); }
-  const adminToggle = document.getElementById("adminToggle");
-  if (adminToggle) { adminToggle.addEventListener("click", () => { if (adminUnlocked) { adminUnlocked = false; render(); } else showPinModal(); }); }
-  document.querySelectorAll("[data-edit]").forEach(btn => {
-    btn.addEventListener("click", () => {
-      const id = btn.getAttribute("data-edit"); const r = rsvps[id]; if (!r) return;
-      editingId = id; form = { name: r.name, email: r.email || "", adults: r.adults, teens: r.teens || 0, kids: r.kids, dishes: getDishes(r), extras: r.extras || [] };
-      submitted = false; currentView = "rsvp"; render(); window.scrollTo(0, 0);
-    });
-  });
-  document.querySelectorAll("[data-delete]").forEach(btn => { btn.addEventListener("click", async () => { await deleteRsvp(btn.getAttribute("data-delete")); }); });
+// ───────────────── ROUTER + RENDER ─────────────────
+function render(){
+  const app=document.getElementById("app");
+  let content;
+  if(currentView==="home") content=homeHTML();
+  else if(currentView==="food") content=foodHTML();
+  else if(currentView==="guests") content=guestsHTML();
+  else if(currentView==="carpool") content=carpoolHTML();
+  else if(currentView==="rsvp") content=rsvpHTML();
+  else content=homeHTML();
+  const showTicker=currentView!=="home"?tickerHTML():tickerHTML();
+  app.innerHTML=navHTML(currentView)+showTicker+content;
+}
+function nav(v){
+  currentView=v;
+  if(v!=="rsvp"){ submitted=false; }
+  window.scrollTo(0,0);
+  history.pushState({view:v},"",`#${v}`);
+  render();
+}
+window.addEventListener("popstate",e=>{ currentView=(e.state&&e.state.view)||"home"; render(); });
+
+// ───────────────── FORM ACTIONS ─────────────────
+function setField(f,v){ form[f]=v; }
+function adjust(f,d){
+  if(f==="seats"){ form.seats=Math.max(1,form.seats+d); }
+  else if(f==="adults"){ form.adults=Math.max(1,form.adults+d); }
+  else { form[f]=Math.max(0,form[f]+d); }
+  render();
+}
+function toggleDish(catId){
+  const i=form.dishes.findIndex(d=>d.category===catId);
+  if(i>=0) form.dishes.splice(i,1);
+  else form.dishes.push({category:catId,item:"",servingSize:""});
+  render();
+}
+function setDishItem(catId,v){ const d=form.dishes.find(x=>x.category===catId); if(d) d.item=v; }
+function setDishSize(catId,v){ const d=form.dishes.find(x=>x.category===catId); if(d) d.servingSize=(v==="Select..."?"":v); }
+function setCarpool(m){ form.carpool=m; render(); }
+
+async function submitForm(){
+  if(!form.name.trim()){ alert("Please enter your name."); return; }
+  const entry={
+    name:form.name.trim(), email:form.email.trim(),
+    adults:form.adults, teens:form.teens, kids:form.kids,
+    dishes:form.dishes.filter(d=>d.item||d.servingSize).map(d=>({category:d.category,item:d.item,servingSize:d.servingSize})),
+    carpool:(form.carpool&&form.carpool!=="none")?form.carpool:null,
+    timestamp:Date.now()
+  };
+  if(entry.carpool==="offer"){ entry.seats=form.seats; entry.zip=form.zip.trim(); entry.phone=form.phone.trim(); entry.carpoolFull=false; }
+  if(entry.carpool==="share"){ entry.zip=form.zip.trim(); entry.phone=form.phone.trim(); }
+  const wasEditing=editingId;
+  const id=await saveRsvp(editingId,entry);
+  if(!wasEditing){ sendConfirmationEmail({...entry}); sendAdminNotification({...entry}); }
+  editingId=null; form=freshForm(); submitted=true; currentView="rsvp"; window.scrollTo(0,0); render();
 }
 
-function showPinModal() {
-  let pin = ""; let error = false;
-  const modal = document.getElementById("pinModal"); if (!modal) return;
-  function rm() {
-    modal.style.display = "block";
-    modal.innerHTML = `<div class="modal-overlay"><div class="modal">
-      <div style="font-size:32px;margin-bottom:8px">🔒</div><h3>Admin Access</h3><p>Enter PIN to manage guest list</p>
-      <input type="password" inputmode="numeric" maxlength="4" id="pinInput" class="${error?'error':''}" value="${pin}" placeholder="PIN">
-      ${error ? '<div class="error-msg">Incorrect PIN</div>' : ''}
-      <div class="modal-btns"><button class="cancel" id="pinCancel">Cancel</button><button class="unlock" id="pinUnlock">Unlock</button></div>
-    </div></div>`;
-    document.getElementById("pinInput").focus();
-    document.getElementById("pinInput").addEventListener("input", (e) => { pin = e.target.value.replace(/\D/g, ""); error = false; });
-    document.getElementById("pinCancel").addEventListener("click", () => { modal.style.display = "none"; });
-    document.getElementById("pinUnlock").addEventListener("click", () => { if (pin === ADMIN_PIN) { adminUnlocked = true; modal.style.display = "none"; render(); } else { error = true; rm(); } });
-  }
-  rm();
+// ───────────────── UPDATE / LOOKUP ─────────────────
+function toggleLookup(){ showLookup=!showLookup; lookupError=""; render(); }
+function doLookup(){
+  const val=document.getElementById("lookupEmail").value.trim().toLowerCase();
+  lookupEmail=val;
+  if(!val){ lookupError="Please enter an email."; render(); return; }
+  const match=getRsvpList().find(r=>(r.email||"").toLowerCase()===val);
+  if(!match){ lookupError="No RSVP found with that email."; render(); return; }
+  editingId=match.id;
+  form={ name:match.name||"", email:match.email||"", adults:match.adults||1, teens:match.teens||0, kids:match.kids||0,
+    dishes:(match.dishes||[]).map(d=>({...d})), carpool:match.carpool||null, seats:match.seats||2, zip:match.zip||"", phone:match.phone||"" };
+  showLookup=false; lookupError=""; submitted=false; window.scrollTo(0,0); render();
+}
+function startEdit(id){
+  const match=getRsvpList().find(r=>r.id===id); if(!match) return;
+  editingId=id;
+  form={ name:match.name||"", email:match.email||"", adults:match.adults||1, teens:match.teens||0, kids:match.kids||0,
+    dishes:(match.dishes||[]).map(d=>({...d})), carpool:match.carpool||null, seats:match.seats||2, zip:match.zip||"", phone:match.phone||"" };
+  submitted=false; nav("rsvp");
+}
+async function removeGuest(id){ if(confirm("Delete this RSVP? This cannot be undone.")){ await deleteRsvp(id); } }
+
+// ───────────────── CARPOOL ACTIONS ─────────────────
+async function askConnect(targetId){
+  const target=getRsvpList().find(r=>r.id===targetId); if(!target) return;
+  const name=prompt("Your name (so Brother Kingsley knows who to connect):"); if(!name) return;
+  const phone=prompt("Your contact number:")||"";
+  const zip=prompt("Your zip code (optional, helps with area):")||"";
+  await sendCarpoolConnect({name:name.trim(),phone:phone.trim(),zip:zip.trim()}, target);
+  alert("Got it! Brother Kingsley has been notified and will introduce you both. Thank you!");
+}
+async function toggleFull(id,makeFull){ await patchRsvp(id,{carpoolFull:makeFull}); }
+
+// ───────────────── ADMIN ─────────────────
+function promptPin(){
+  const p=prompt("Admin PIN:");
+  if(p===ADMIN_PIN){ adminUnlocked=true; render(); }
+  else if(p!==null){ alert("Incorrect PIN."); }
+}
+function lockAdmin(){ adminUnlocked=false; render(); }
+function copyEmails(el){
+  const emails=el.getAttribute("data-emails");
+  if(!emails) return;
+  navigator.clipboard.writeText(emails).then(()=>{ const o=el.textContent; el.textContent="Copied!"; setTimeout(()=>{el.textContent=o;},1200); });
 }
 
+// ───────────────── INIT ─────────────────
+const initialHash=window.location.hash.replace("#","");
+if(["home","food","guests","carpool","rsvp"].includes(initialHash)) currentView=initialHash;
 loadRsvps();
-pollInterval = setInterval(loadRsvps, 10000);
-
-// Browser back/forward button support
-window.addEventListener("popstate", (e) => {
-  if (e.state && e.state.view) {
-    currentView = e.state.view;
-    submitted = false;
-    render();
-    window.scrollTo(0, 0);
-  }
-});
-
-// Load view from hash on initial page load
-const initHash = window.location.hash.replace("#", "");
-if (["home", "board", "guests", "rsvp"].includes(initHash)) {
-  currentView = initHash;
-}
-history.replaceState({ view: currentView }, "", `#${currentView}`);
+setInterval(loadRsvps, 30000);
 </script>
 </body>
 </html>
