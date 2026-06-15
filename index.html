@@ -131,6 +131,7 @@ const FOOD_CATEGORIES = [
   { id:"drinks", label:"Drinks", examples:"Zobo, lemonade, juice, punch, sweet tea" },
 ];
 const SERVING_SIZES = ["Small (5–10)","Medium (10–20)","Large (20+)","Extra Large (30+)","Half Pan","Full Pan"];
+const EXTRAS = [ { id:"games", label:"Outdoor Games" } ];
 
 let rsvps = {};
 let currentView = "home";
@@ -142,12 +143,23 @@ let showLookup = false;
 let submitted = false;
 let pinError = "";
 let form = freshForm();
-function freshForm(){ return { name:"", email:"", adults:1, teens:0, kids:0, dishes:[], carpool:null, seats:2, zip:"", phone:"" }; }
+function freshForm(){ return { name:"", email:"", adults:1, teens:0, kids:0, dishes:[], carpool:null, seats:2, zip:"", phone:"", extras:[], gamesDetail:"" }; }
 
 // ───────────────── FIREBASE ─────────────────
-async function loadRsvps(){
-  try { const res = await fetch(`${DB_URL}/rsvps.json`); const data = await res.json(); rsvps = data || {}; render(); }
-  catch(e){ console.error("Load failed:",e); }
+async function loadRsvps(isBackground){
+  try {
+    const res = await fetch(`${DB_URL}/rsvps.json`);
+    const data = await res.json();
+    const incoming = data || {};
+    if(isBackground){
+      // Don't disrupt the user mid-form; skip re-render while typing an RSVP.
+      if(currentView==="rsvp") { rsvps = incoming; return; }
+      // Only re-render if the data actually changed.
+      if(JSON.stringify(incoming) === JSON.stringify(rsvps)) { return; }
+    }
+    rsvps = incoming;
+    render();
+  } catch(e){ console.error("Load failed:",e); }
 }
 async function saveRsvp(id, data){
   try {
@@ -182,8 +194,9 @@ function buildRsvpSummary(entry){
   let summary=parts.join(', ');
   const dishes=getDishes(entry);
   if(dishes.length){ summary+=' · Bringing: '+dishes.map(d=>d.item||FOOD_CATEGORIES.find(c=>c.id===d.category)?.label||d.category).join(', '); }
+  if(entry.extras && entry.extras.length){ summary+=' · Extras: '+entry.extras.map(id=>EXTRAS.find(e=>e.id===id)?.label||id).join(', '); }
+  if(entry.gamesDetail){ summary+=' ('+entry.gamesDetail+')'; }
   if(entry.carpool==="offer") summary+=` · Carpool: offering ${entry.seats} seat${entry.seats!==1?'s':''} (${townFromZip(entry.zip)||entry.zip||'area n/a'})`;
-  if(entry.carpool==="share") summary+=` · Carpool: open to sharing a ride (${townFromZip(entry.zip)||entry.zip||'area n/a'})`;
   return summary;
 }
 
@@ -202,20 +215,19 @@ async function sendAdminNotification(entry){
 async function sendCarpoolConnect(requester, target){
   try { await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_ADMIN_TEMPLATE_ID, {
     name: `CARPOOL REQUEST — ${requester.name}`,
-    to_email: requester.phone || requester.email || "n/a",
-    rsvp_summary: `${requester.name} (${townFromZip(requester.zip)||requester.zip||'area n/a'}, ${requester.phone||'no phone'}) wants to connect with ${target.name} (${townFromZip(target.zip)||target.zip||'area n/a'}, ${target.phone||'no phone'}) for a ride. Please introduce them.`
+    to_email: requester.phone || "n/a",
+    rsvp_summary: `${requester.name} needs ${requester.seatsNeeded||'?'} seat(s) and wants a ride from ${target.name} (${townFromZip(target.zip)||target.zip||'area n/a'}, offering ${target.seats} seat(s)). Rider's number: ${requester.phone||'not provided'}. Driver's number: ${target.phone||'not provided'}. Please connect them.`
   }); } catch(e){ console.error("Carpool connect failed:",e); }
 }
 
 // ───────────────── CARPOOL GROUPING ─────────────────
 function getCarpoolGroups(){
-  const list=getRsvpList().filter(r=>r.carpool==="offer"||r.carpool==="share");
+  const list=getRsvpList().filter(r=>r.carpool==="offer");
   const groups={};
   list.forEach(r=>{
     const area = townFromZip(r.zip) || (r.zip ? `Zip ${r.zip}` : "Area not shared");
-    if(!groups[area]) groups[area]={ area, offering:[], sharing:[] };
-    if(r.carpool==="offer") groups[area].offering.push(r);
-    else groups[area].sharing.push(r);
+    if(!groups[area]) groups[area]={ area, offering:[] };
+    groups[area].offering.push(r);
   });
   return Object.values(groups).sort((a,b)=>a.area.localeCompare(b.area));
 }
@@ -278,12 +290,12 @@ function homeHTML(){
     <div class="rise" style="animation-delay:.65s;max-width:500px;margin:22px auto 0;padding:0 24px;display:flex;justify-content:center;text-align:center">
       <div style="flex:1;padding:2px 10px"><p style="font-size:9px;font-weight:800;letter-spacing:2.5px;color:var(--soft);margin-bottom:4px">SATURDAY</p><p style="font-size:15px;font-weight:800;color:var(--navy)">July 4, 2026</p></div>
       <div style="flex:1;padding:2px 10px;border-left:1px solid var(--line)"><p style="font-size:9px;font-weight:800;letter-spacing:2.5px;color:var(--soft);margin-bottom:4px">STARTING AT</p><p style="font-size:15px;font-weight:800;color:var(--navy)">5:00 PM</p></div>
-      <div style="flex:1;padding:2px 10px;border-left:1px solid var(--line)"><p style="font-size:9px;font-weight:800;letter-spacing:2.5px;color:var(--soft);margin-bottom:4px">AT DUSK</p><p style="font-size:15px;font-weight:800;color:var(--red);line-height:1.1">Light&nbsp;Fireworks</p></div>
+      <div style="flex:1;padding:2px 10px;border-left:1px solid var(--line)"><p style="font-size:9px;font-weight:800;letter-spacing:2.5px;color:var(--soft);margin-bottom:4px">AT DUSK</p><p style="font-size:15px;font-weight:800;color:var(--red)">Light Fireworks</p></div>
     </div>
     <p class="rise" style="animation-delay:.72s;text-align:center;font-size:12px;color:var(--soft);font-style:italic;margin-top:16px;padding:0 24px">Address to be shared via RSVP confirmation email</p>
     <div class="rise" style="animation-delay:.82s;max-width:420px;margin:26px auto 0;padding:0 28px;text-align:center">
       <p style="font-size:16px;color:var(--ink);line-height:1.65;font-weight:500;margin-bottom:10px">Join us for an evening of food, fellowship, and fireworks this Independence Day.</p>
-      <p style="font-family:'Kaushan Script',cursive;font-size:23px;color:var(--navy);line-height:1.3">Invite your family &amp; friends!</p>
+      <p style="font-family:'Kaushan Script',cursive;font-size:23px;color:var(--navy);line-height:1.3">Family and friends are invited!</p>
     </div>
     <div class="rise" style="animation-delay:.9s;display:flex;gap:10px;max-width:410px;margin:28px auto 0;padding:0 24px 16px">
       <button onclick="nav('guests')" style="flex:1;padding:15px 8px;border-radius:8px;border:1.5px solid rgba(30,42,86,0.19);background:transparent;font-size:10px;font-weight:800;color:var(--navy);letter-spacing:2px">GUEST LIST</button>
@@ -358,43 +370,34 @@ function carpoolHTML(){
   const groups=getCarpoolGroups();
   let body;
   if(groups.length===0){
-    body=`<div style="background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:40px 18px;text-align:center;color:var(--soft);font-size:14px;line-height:1.6">No one has opted into carpooling yet.<br>Add it when you RSVP and you'll show up here, grouped by area.</div>`;
+    body=`<div style="background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:40px 18px;text-align:center;color:var(--soft);font-size:14px;line-height:1.6">No one has offered a ride yet.<br>If you have room in your car, add it when you RSVP and you'll show up here.</div>`;
   } else {
     body=groups.map((group,gi)=>{
       const offerSeats=group.offering.reduce((s,o)=>s+(+o.seats||0),0);
-      let summary=[];
-      if(offerSeats>0) summary.push(`<span style="color:var(--green)">${offerSeats} seat${offerSeats!==1?'s':''} offered</span>`);
-      if(group.sharing.length>0) summary.push(`<span style="color:var(--navy)">${group.sharing.length} open to share</span>`);
-      let sections="";
-      if(group.offering.length){
-        sections+=`<div style="padding:10px 16px"><p style="font-size:10px;font-weight:800;letter-spacing:1.5px;color:var(--green);text-transform:uppercase;margin-bottom:8px">Offering Seats</p>`+
-          group.offering.map(o=>{
-            const full=o.carpoolFull;
-            return `<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;${full?'opacity:.5':''}">
-              <div><span style="font-size:14px;font-weight:700;color:var(--ink);${full?'text-decoration:line-through':''}">${esc(o.name)}</span><span style="font-size:12px;color:var(--soft);margin-left:8px">${o.seats} seat${o.seats!==1?'s':''}</span>${full?'<span style="font-size:11px;color:var(--red);font-weight:700;margin-left:6px">FULL</span>':''}</div>
-              ${full?'':`<button onclick="askConnect('${o.id}')" style="padding:7px 16px;border-radius:6px;border:none;background:var(--green);color:#fff;font-size:11px;font-weight:800;letter-spacing:1px;flex-shrink:0">Ask to Connect</button>`}
-              ${adminUnlocked?`<button onclick="toggleFull('${o.id}',${full?'false':'true'})" style="margin-left:6px;background:none;border:1px solid var(--line);border-radius:6px;padding:6px 10px;font-size:10px;font-weight:700;color:var(--soft);flex-shrink:0">${full?'Reopen':'Mark full'}</button>`:''}
-            </div>`;
-          }).join("")+`</div>`;
-      }
-      if(group.sharing.length){
-        sections+=`<div style="padding:10px 16px;${group.offering.length?'border-top:1px dashed var(--line)':''}"><p style="font-size:10px;font-weight:800;letter-spacing:1.5px;color:var(--navy);text-transform:uppercase;margin-bottom:8px">Open to Sharing</p>`+
-          group.sharing.map(n=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0"><span style="font-size:14px;font-weight:700;color:var(--ink)">${esc(n.name)}</span><button onclick="askConnect('${n.id}')" style="padding:7px 16px;border-radius:6px;border:none;background:var(--navy);color:#fff;font-size:11px;font-weight:800;letter-spacing:1px;flex-shrink:0">Ask to Connect</button></div>`).join("")+`</div>`;
-      }
+      const summary=`<span style="color:var(--green)">${offerSeats} seat${offerSeats!==1?'s':''} available</span>`;
+      let sections=`<div style="padding:10px 16px">`+
+        group.offering.map(o=>{
+          const full=o.carpoolFull;
+          return `<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;${full?'opacity:.5':''}">
+            <div><span style="font-size:14px;font-weight:700;color:var(--ink);${full?'text-decoration:line-through':''}">${esc(o.name)}</span><span style="font-size:12px;color:var(--soft);margin-left:8px">${o.seats} seat${o.seats!==1?'s':''}</span>${full?'<span style="font-size:11px;color:var(--red);font-weight:700;margin-left:6px">FULL</span>':''}</div>
+            ${full?'':`<button onclick="askConnect('${o.id}')" style="padding:7px 16px;border-radius:6px;border:none;background:var(--green);color:#fff;font-size:11px;font-weight:800;letter-spacing:1px;flex-shrink:0">Ask to Connect</button>`}
+            ${adminUnlocked?`<button onclick="toggleFull('${o.id}',${full?'false':'true'})" style="margin-left:6px;background:none;border:1px solid var(--line);border-radius:6px;padding:6px 10px;font-size:10px;font-weight:700;color:var(--soft);flex-shrink:0">${full?'Reopen':'Mark full'}</button>`:''}
+          </div>`;
+        }).join("")+`</div>`;
       return `<div class="rise" style="animation-delay:${(0.1+gi*0.05).toFixed(2)}s;background:var(--paper);border-radius:12px;border:1px solid var(--line);overflow:hidden">
         <div style="padding:12px 16px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;background:var(--cream)">
           <div style="font-weight:800;font-size:15px;color:var(--navy)">${esc(group.area)}</div>
-          <div style="font-size:11px;color:var(--soft);font-weight:600">${summary.join(' · ')}</div>
+          <div style="font-size:11px;color:var(--soft);font-weight:600">${summary}</div>
         </div>${sections}</div>`;
     }).join("");
   }
   return `<div style="max-width:560px;margin:0 auto;padding:26px 20px 60px">
     <h2 class="rise" style="font-family:'Playfair Display',serif;font-size:34px;font-weight:900;color:var(--navy);text-align:center;margin-bottom:4px">Carpool</h2>
     <p class="rise" style="animation-delay:.05s;font-family:'Great Vibes',cursive;font-size:26px;color:var(--gold);text-align:center;margin-bottom:10px">let's ride together</p>
-    <p class="rise" style="animation-delay:.08s;font-size:12px;color:var(--soft);text-align:center;margin:0 auto 24px;line-height:1.5;max-width:380px">Grouped by area. Find someone nearby and tap "Ask to Connect" — Brother Kingsley will introduce you both. Contact info is never shown publicly.</p>
+    <p class="rise" style="animation-delay:.08s;font-size:12px;color:var(--soft);text-align:center;margin:0 auto 24px;line-height:1.5;max-width:380px">These neighbors have room in their car. Find someone nearby and tap "Ask to Connect" — Kingsley will introduce you. Contact info is never shown publicly.</p>
     <div style="display:flex;flex-direction:column;gap:16px">${body}</div>
     <button onclick="nav('rsvp')" style="width:100%;padding:17px;border-radius:8px;border:none;background:var(--red);color:#fff;font-size:13px;font-weight:800;letter-spacing:2px;margin-top:24px;box-shadow:0 5px 18px rgba(178,34,52,0.19)">RSVP &amp; Join Carpool</button>
-    <p style="font-size:11px;color:var(--soft);text-align:center;margin-top:14px;font-style:italic;line-height:1.5">Tap "Ask to Connect" and Brother Kingsley will introduce you both so you can arrange a ride. No contact info is shared publicly.</p>
+    <p style="font-size:11px;color:var(--soft);text-align:center;margin-top:14px;font-style:italic;line-height:1.5">Tap "Ask to Connect" and Kingsley will introduce you both so you can arrange a ride. No contact info is shared publicly.</p>
   </div>`;
 }
 
@@ -424,20 +427,13 @@ function rsvpHTML(){
   }).join("");
 
   // carpool
-  const cpBtn=(m,title,sub,color)=>`<button onclick="setCarpool('${m}')" style="width:100%;text-align:left;padding:14px 16px;border-radius:10px;border:${form.carpool===m?`2px solid ${color}`:'1px solid var(--line)'};background:${form.carpool===m?color+'14':'var(--paper)'};color:${form.carpool===m?color:'var(--ink)'}"><div style="font-weight:800;font-size:14px">${title}</div>${sub?`<div style="font-size:12px;opacity:.8;margin-top:2px">${sub}</div>`:''}</button>`;
   let cpDetail="";
   if(form.carpool==="offer"){
     cpDetail=`<div style="background:rgba(45,106,79,0.05);border:1px solid rgba(45,106,79,0.18);border-radius:10px;padding:16px">
       <label style="display:block;font-size:10px;font-weight:800;color:var(--soft);margin-bottom:6px;letter-spacing:1.5px;text-transform:uppercase">Seats you can offer</label>
       <div style="display:flex;align-items:center;gap:16px;margin-bottom:14px"><button onclick="adjust('seats',-1)" style="width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:var(--cream);font-size:16px;font-weight:700;color:var(--navy)">−</button><span style="font-size:22px;font-weight:800;color:var(--ink);min-width:28px;text-align:center">${form.seats}</span><button onclick="adjust('seats',1)" style="width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:var(--cream);font-size:16px;font-weight:700;color:var(--navy)">+</button></div>
       ${zipPhoneInputs()}
-      <p style="font-size:11px;color:var(--soft);margin-top:8px;line-height:1.4">Your zip is only used to group you by area. Your number is never shown publicly — it's shared only when Brother Kingsley connects you with someone for a ride.</p>
-    </div>`;
-  } else if(form.carpool==="share"){
-    cpDetail=`<div style="background:rgba(30,42,86,0.04);border:1px solid rgba(30,42,86,0.13);border-radius:10px;padding:16px">
-      ${zipPhoneInputs()}
-      <p style="font-size:11px;color:var(--soft);margin-top:8px;line-height:1.4">Your zip is only used to group you with people nearby. Your number is never shown publicly — it's shared only when Brother Kingsley connects you with someone for a ride.</p>
-      <div style="margin-top:14px;padding:12px 14px;background:rgba(196,153,59,0.07);border:1px solid rgba(196,153,59,0.25);border-radius:8px"><p style="font-size:12px;color:var(--ink);font-weight:600;line-height:1.5">Next step: after you submit, head to the <button onclick="nav('carpool')" style="background:none;border:none;padding:0;color:var(--red);font-weight:800;text-decoration:underline;font-size:12px">Carpool</button> tab, find someone offering seats in your area, and tap "Ask to Connect."</p></div>
+      <p style="font-size:11px;color:var(--soft);margin-top:8px;line-height:1.4">Your zip is only used to group you by area. Your number is never shown publicly — it's shared only when Kingsley connects you with someone who needs a ride.</p>
     </div>`;
   }
 
@@ -458,7 +454,7 @@ function rsvpHTML(){
     <div class="rise" style="animation-delay:.05s;background:var(--paper);border-radius:12px;padding:20px;margin-bottom:12px;border:1px solid var(--line)">
       <h3 style="font-family:'Playfair Display',serif;font-size:19px;font-weight:900;color:var(--navy);margin-bottom:14px">Who's Coming?</h3>
       <label style="display:block;font-size:10px;font-weight:800;color:var(--soft);margin-bottom:6px;letter-spacing:1.5px;text-transform:uppercase">Name / Family Name</label>
-      <input value="${esc(form.name)}" oninput="setField('name',this.value)" placeholder="e.g. The Okafor Family" style="width:100%;padding:13px 15px;border-radius:8px;border:1px solid var(--line);background:var(--cream);font-size:14px;color:var(--ink);outline:none;box-sizing:border-box">
+      <input value="${esc(form.name)}" oninput="setField('name',this.value)" placeholder="e.g. Okafor Family" style="width:100%;padding:13px 15px;border-radius:8px;border:1px solid var(--line);background:var(--cream);font-size:14px;color:var(--ink);outline:none;box-sizing:border-box">
       <label style="display:block;font-size:10px;font-weight:800;color:var(--soft);margin:16px 0 6px;letter-spacing:1.5px;text-transform:uppercase">Email</label>
       <input value="${esc(form.email)}" oninput="setField('email',this.value)" type="email" placeholder="e.g. name@email.com" style="width:100%;padding:13px 15px;border-radius:8px;border:1px solid var(--line);background:var(--cream);font-size:14px;color:var(--ink);outline:none;box-sizing:border-box">
       ${counter('Adults','adults')}${counter('Teens (13–17)','teens')}${counter('Children','kids')}
@@ -470,13 +466,22 @@ function rsvpHTML(){
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">${dishBtns}</div>
       ${dishDetails}
     </div>
+    <div class="rise" style="animation-delay:.13s;background:var(--paper);border-radius:12px;padding:20px;margin-bottom:12px;border:1px solid var(--line)">
+      <h3 style="font-family:'Playfair Display',serif;font-size:19px;font-weight:900;color:var(--navy);margin-bottom:6px">Bringing Any Extras?</h3>
+      <p style="font-size:12px;color:var(--soft);margin-bottom:14px">Optional — but always appreciated!</p>
+      <div style="display:flex;flex-wrap:wrap;gap:8px">
+        ${EXTRAS.map(ex=>{const on=form.extras.includes(ex.id);return `<button onclick="toggleExtra('${ex.id}')" style="padding:10px 18px;border-radius:20px;border:${on?'2px solid var(--green)':'1px solid var(--line)'};background:${on?'rgba(45,106,79,0.06)':'var(--paper)'};cursor:pointer;font-size:12px;font-weight:700;color:${on?'var(--green)':'var(--ink)'}">${esc(ex.label)}</button>`;}).join("")}
+      </div>
+      ${form.extras.includes('games')?`<div style="margin-top:12px;padding:16px;background:rgba(45,106,79,0.05);border:1px solid rgba(45,106,79,0.18);border-radius:10px">
+        <label style="display:block;font-size:10px;font-weight:800;color:var(--soft);margin-bottom:6px;letter-spacing:1.5px;text-transform:uppercase">Which game(s)?</label>
+        <input value="${esc(form.gamesDetail||'')}" oninput="setField('gamesDetail',this.value)" placeholder="e.g. Cornhole, spades, dominoes, soccer ball..." style="width:100%;padding:13px 15px;border-radius:8px;border:1px solid var(--line);background:var(--cream);font-size:14px;color:var(--ink);outline:none;box-sizing:border-box">
+      </div>`:''}
+    </div>
     <div class="rise" style="animation-delay:.15s;background:var(--paper);border-radius:12px;padding:20px;margin-bottom:12px;border:1px solid var(--line)">
-      <h3 style="font-family:'Playfair Display',serif;font-size:19px;font-weight:900;color:var(--navy);margin-bottom:14px">Open to Carpooling?</h3>
-      <p style="font-size:13px;color:var(--soft);margin-bottom:16px;line-height:1.5">Optional — if you're open to sharing a ride, we'll group you by area so neighbors can travel together.</p>
-      <div style="display:flex;flex-direction:column;gap:8px;${form.carpool&&form.carpool!=='none'?'margin-bottom:16px':''}">
-        ${cpBtn('offer','I can offer seats','Happy to pick up others on the way','var(--green)')}
-        ${cpBtn('share','I\'m open to sharing a ride','I\'d happily ride along with someone nearby','var(--navy)')}
-        ${cpBtn('none','No thanks — we\'re set','','var(--soft)')}
+      <h3 style="font-family:'Playfair Display',serif;font-size:19px;font-weight:900;color:var(--navy);margin-bottom:6px">Can You Offer a Ride?</h3>
+      <p style="font-size:13px;color:var(--soft);margin-bottom:16px;line-height:1.5">Optional — if you have room in your car, let us know. We'll list you on the Carpool board so neighbors who need a ride can ask to connect.</p>
+      <div style="display:flex;flex-direction:column;gap:8px;${form.carpool==='offer'?'margin-bottom:16px':''}">
+        <button onclick="setCarpool('${form.carpool==='offer'?'none':'offer'}')" style="width:100%;text-align:left;padding:14px 16px;border-radius:10px;border:${form.carpool==='offer'?'2px solid var(--green)':'1px solid var(--line)'};background:${form.carpool==='offer'?'rgba(45,106,79,0.08)':'var(--paper)'};color:${form.carpool==='offer'?'var(--green)':'var(--ink)'}"><div style="font-weight:800;font-size:14px">${form.carpool==='offer'?'✓ ':''}Yes, I can offer seats</div><div style="font-size:12px;opacity:.8;margin-top:2px">Happy to pick up others on the way</div></button>
       </div>
       ${cpDetail}
     </div>
@@ -542,6 +547,7 @@ function toggleDish(catId){
 function setDishItem(catId,v){ const d=form.dishes.find(x=>x.category===catId); if(d) d.item=v; }
 function setDishSize(catId,v){ const d=form.dishes.find(x=>x.category===catId); if(d) d.servingSize=(v==="Select..."?"":v); }
 function setCarpool(m){ form.carpool=m; render(); }
+function toggleExtra(id){ const i=form.extras.indexOf(id); if(i>=0) form.extras.splice(i,1); else form.extras.push(id); render(); }
 
 async function submitForm(){
   if(!form.name.trim()){ alert("Please enter your name."); return; }
@@ -549,11 +555,12 @@ async function submitForm(){
     name:form.name.trim(), email:form.email.trim(),
     adults:form.adults, teens:form.teens, kids:form.kids,
     dishes:form.dishes.filter(d=>d.item||d.servingSize).map(d=>({category:d.category,item:d.item,servingSize:d.servingSize})),
+    extras:form.extras.slice(),
+    gamesDetail:form.extras.includes("games")?form.gamesDetail.trim():"",
     carpool:(form.carpool&&form.carpool!=="none")?form.carpool:null,
     timestamp:Date.now()
   };
   if(entry.carpool==="offer"){ entry.seats=form.seats; entry.zip=form.zip.trim(); entry.phone=form.phone.trim(); entry.carpoolFull=false; }
-  if(entry.carpool==="share"){ entry.zip=form.zip.trim(); entry.phone=form.phone.trim(); }
   const wasEditing=editingId;
   const id=await saveRsvp(editingId,entry);
   if(!wasEditing){ sendConfirmationEmail({...entry}); sendAdminNotification({...entry}); }
@@ -570,14 +577,14 @@ function doLookup(){
   if(!match){ lookupError="No RSVP found with that email."; render(); return; }
   editingId=match.id;
   form={ name:match.name||"", email:match.email||"", adults:match.adults||1, teens:match.teens||0, kids:match.kids||0,
-    dishes:(match.dishes||[]).map(d=>({...d})), carpool:match.carpool||null, seats:match.seats||2, zip:match.zip||"", phone:match.phone||"" };
+    dishes:(match.dishes||[]).map(d=>({...d})), extras:(match.extras||[]).slice(), gamesDetail:match.gamesDetail||"", carpool:match.carpool||null, seats:match.seats||2, zip:match.zip||"", phone:match.phone||"" };
   showLookup=false; lookupError=""; submitted=false; window.scrollTo(0,0); render();
 }
 function startEdit(id){
   const match=getRsvpList().find(r=>r.id===id); if(!match) return;
   editingId=id;
   form={ name:match.name||"", email:match.email||"", adults:match.adults||1, teens:match.teens||0, kids:match.kids||0,
-    dishes:(match.dishes||[]).map(d=>({...d})), carpool:match.carpool||null, seats:match.seats||2, zip:match.zip||"", phone:match.phone||"" };
+    dishes:(match.dishes||[]).map(d=>({...d})), extras:(match.extras||[]).slice(), gamesDetail:match.gamesDetail||"", carpool:match.carpool||null, seats:match.seats||2, zip:match.zip||"", phone:match.phone||"" };
   submitted=false; nav("rsvp");
 }
 async function removeGuest(id){ if(confirm("Delete this RSVP? This cannot be undone.")){ await deleteRsvp(id); } }
@@ -585,11 +592,11 @@ async function removeGuest(id){ if(confirm("Delete this RSVP? This cannot be und
 // ───────────────── CARPOOL ACTIONS ─────────────────
 async function askConnect(targetId){
   const target=getRsvpList().find(r=>r.id===targetId); if(!target) return;
-  const name=prompt("Your name (so Brother Kingsley knows who to connect):"); if(!name) return;
-  const phone=prompt("Your contact number:")||"";
-  const zip=prompt("Your zip code (optional, helps with area):")||"";
-  await sendCarpoolConnect({name:name.trim(),phone:phone.trim(),zip:zip.trim()}, target);
-  alert("Got it! Brother Kingsley has been notified and will introduce you both. Thank you!");
+  const name=prompt("Your name (so Kingsley knows who to connect):"); if(!name) return;
+  const seatsNeeded=prompt("How many seats do you need?","1")||"";
+  const phone=prompt("Your contact number (so Kingsley can connect you):")||"";
+  await sendCarpoolConnect({name:name.trim(),phone:phone.trim(),seatsNeeded:seatsNeeded.trim()}, target);
+  alert("Got it! Kingsley has been notified and will connect you. Thank you!");
 }
 async function toggleFull(id,makeFull){ await patchRsvp(id,{carpoolFull:makeFull}); }
 
@@ -610,7 +617,7 @@ function copyEmails(el){
 const initialHash=window.location.hash.replace("#","");
 if(["home","food","guests","carpool","rsvp"].includes(initialHash)) currentView=initialHash;
 loadRsvps();
-setInterval(loadRsvps, 30000);
+if(!window.__cookoutPoll){ window.__cookoutPoll = setInterval(()=>loadRsvps(true), 30000); }
 </script>
 </body>
 </html>
