@@ -359,7 +359,7 @@ function guestsHTML(){
   }
   return `<div style="max-width:560px;margin:0 auto;padding:26px 20px 60px">
     <h2 class="rise" style="font-family:'Playfair Display',serif;font-size:34px;font-weight:900;color:var(--navy);text-align:center;margin-bottom:4px">Guest List</h2>
-    <p class="rise" style="animation-delay:.05s;font-family:'Great Vibes',cursive;font-size:26px;color:var(--gold);text-align:center;margin-bottom:20px">${list.length} ${list.length===1?'RSVP':'RSVP'}s &amp; counting</p>
+    <p class="rise" style="animation-delay:.05s;font-family:'Great Vibes',cursive;font-size:26px;color:var(--gold);text-align:center;margin-bottom:20px">${list.length} rsvp${list.length===1?'':'s'} &amp; counting</p>
     <div class="rise" style="animation-delay:.1s;background:var(--paper);border-radius:12px;border:1px solid var(--line);overflow:hidden">${rows}</div>
     ${adminPanel}
   </div>`;
@@ -453,8 +453,8 @@ function rsvpHTML(){
     ${lookupBlock}
     <div class="rise" style="animation-delay:.05s;background:var(--paper);border-radius:12px;padding:20px;margin-bottom:12px;border:1px solid var(--line)">
       <h3 style="font-family:'Playfair Display',serif;font-size:19px;font-weight:900;color:var(--navy);margin-bottom:14px">Who's Coming?</h3>
-      <label style="display:block;font-size:10px;font-weight:800;color:var(--soft);margin-bottom:6px;letter-spacing:1.5px;text-transform:uppercase">Name / Family Name</label>
-      <input value="${esc(form.name)}" oninput="setField('name',this.value)" placeholder="e.g. Okafor Family" style="width:100%;padding:13px 15px;border-radius:8px;border:1px solid var(--line);background:var(--cream);font-size:14px;color:var(--ink);outline:none;box-sizing:border-box">
+      <label style="display:block;font-size:10px;font-weight:800;color:var(--soft);margin-bottom:6px;letter-spacing:1.5px;text-transform:uppercase">Your Name</label>
+      <input value="${esc(form.name)}" oninput="setField('name',this.value)" placeholder="e.g. The Okafor family — or Jordan" style="width:100%;padding:13px 15px;border-radius:8px;border:1px solid var(--line);background:var(--cream);font-size:14px;color:var(--ink);outline:none;box-sizing:border-box">
       <label style="display:block;font-size:10px;font-weight:800;color:var(--soft);margin:16px 0 6px;letter-spacing:1.5px;text-transform:uppercase">Email</label>
       <input value="${esc(form.email)}" oninput="setField('email',this.value)" type="email" placeholder="e.g. name@email.com" style="width:100%;padding:13px 15px;border-radius:8px;border:1px solid var(--line);background:var(--cream);font-size:14px;color:var(--ink);outline:none;box-sizing:border-box">
       ${counter('Adults','adults')}${counter('Teens (13–17)','teens')}${counter('Children','kids')}
